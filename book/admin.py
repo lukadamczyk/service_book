@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle
+from .models import Vehicle, Inspection
 
 
 class VehicleAdmin(admin.ModelAdmin):
@@ -9,3 +9,9 @@ class VehicleAdmin(admin.ModelAdmin):
 
 admin.site.register(Vehicle, VehicleAdmin)
 
+
+class InspectionAdmin(admin.ModelAdmin):
+    list_display = ('date', 'inspection_type', 'performer', 'vehicle')
+    list_filter = ('inspection_type', 'performer')
+
+admin.site.register(Inspection, InspectionAdmin)
