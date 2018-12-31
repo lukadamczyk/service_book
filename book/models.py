@@ -51,6 +51,9 @@ class Inspection(models.Model):
                                 on_delete=models.CASCADE,
                                 null=True)
 
+    class Meta:
+        ordering = ('-date',)
+
     def __str__(self):
         return 'Przegląd: {}, dzień wykonania: {}.{}.{}'.format(self.inspection_type, self.date.day, self.date.month,
                                                                 self.date.year)
