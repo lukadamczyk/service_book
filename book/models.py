@@ -21,4 +21,32 @@ class Vehicle(models.Model):
                        args=[self.id, self.slug])
 
 
-# Create your models here.
+class Inspection(models.Model):
+    choices = (
+        ('P1.1', 'P1.1'),
+        ('P1.2', 'P1.2'),
+        ('P1.3', 'P1.3'),
+        ('P2.1', 'P2.1'),
+        ('P2.2', 'P2.2'),
+        ('P2.3', 'P2.3'),
+        ('P3.1', 'P3.1'),
+        ('P3.2', 'P3.2'),
+    )
+    date = models.DateField(null=True)
+    inspection_type = models.CharField(max_length=10,
+                                       db_index=True,
+                                       null=True,
+                                       choices=choices)
+    performer = models.CharField(max_length=30,
+                                 db_index=True,
+                                 null=True)
+    vehicle = models.ForeignKey(Vehicle,
+                                related_name='vehicles',
+                                on_delete=models.CASCADE,
+                                null=True)
+
+    def __str__(self):
+        return 'Przegląd: {}, dzień wykonania: {}.{}.{}'.format(self.inspection_type, self.date.day, self.date.month,
+                                                                self.date.year)
+
+
