@@ -30,3 +30,10 @@ class FaultAdmin(admin.ModelAdmin):
     list_filter = ('vehicle', 'status')
 
 admin.site.register(Fault, FaultAdmin)
+
+
+class PartAdmin(admin.ModelAdmin):
+    list_display = ('name', 'index', 'fault', 'assembly_date', 'condition')
+    list_filter = ('name', 'condition')
+
+admin.site.register(Part, PartAdmin)
