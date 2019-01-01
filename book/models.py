@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.conf import settings
 
 
 class Vehicle(models.Model):
@@ -57,5 +58,38 @@ class Inspection(models.Model):
     def __str__(self):
         return 'Przegląd: {}, dzień wykonania: {}.{}.{}'.format(self.inspection_type, self.date.day, self.date.month,
                                                                 self.date.year)
+
+
+class Complaint(models.Model):
+    status_choices = (
+        ('open', 'Open'),
+        ('close', 'Close')
+    )
+    client_choices = (
+        ('KW', 'Koleje Wielkopolskie'),
+        ('KL', 'Koleje Lubuskie')
+    )
+    document_number = models.CharField(max_length=50)
+    entry_date = models.DateTimeField()
+    updated = models.DateTimeField(auto_now=True)
+    end_date = models.DateTimeField(blank=True,
+                                    null=True)
+    status = models.CharField(max_length=10,
+                              choices=status_choices)
+    tasks = models.TextField(blank=True,
+                             null=True)
+    client = models.CharField(max_length=50,
+                              choices=client_choices)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,
+                             on_delete=models.CASCADE)
+    vehicle = models.ForeignKey(Vehicle,
+                                related_name='complaint_vehicles',
+                                on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.document_number
+
+    class Meta:
+        ordering = ('-entry_date',)
 
 
