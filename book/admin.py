@@ -16,7 +16,7 @@ class InspectionAdmin(admin.ModelAdmin):
 
 admin.site.register(Inspection, InspectionAdmin)
 
-class ComplaintionAdmin(admin.ModelAdmin):
+class ComplaintAdmin(admin.ModelAdmin):
     list_display = ('document_number', 'vehicle', 'status', 'entry_date', 'tasks', 'updated', 'end_date', 'client',
                     'user')
     list_filter = ('vehicle', 'status')
