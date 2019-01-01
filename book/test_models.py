@@ -26,6 +26,20 @@ def create_user(username, email='john@gmail.com', password='password'):
                                     password=password)
     return user
 
+def create_complaint(vehicle, user, updated=None, doc_number='KW 123',
+                     entry_date=datetime.datetime(2018, 2, 1),
+                     status='open',
+                     tasks='test',
+                     client='KW'):
+    complaint = Complaint.objects.create(document_number=doc_number,
+                                         entry_date=entry_date,
+                                         updated=updated,
+                                         status=status,
+                                         tasks=tasks,
+                                         client=client,
+                                         vehicle=vehicle,
+                                         user=user)
+    return complaint
 
 class VehicleTestCase(TestCase):
 
