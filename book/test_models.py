@@ -65,6 +65,8 @@ class InspectionTestCase(TestCase):
         self.assertTrue(isinstance(inspection, Inspection))
         self.assertEqual(inspection.__str__(), 'Przegląd: P3.2, dzień wykonania: 12.9.2018')
         self.assertTrue(isinstance(inspection.vehicle, Vehicle))
+        self.assertEqual(inspection.inspection_type, 'P3.2')
+
 
 class ComplaintTestCase(TestCase):
 
