@@ -172,7 +172,8 @@ class Part(models.Model):
     condition = models.CharField(max_length=10,
                                  choices=condition_choices,
                                  db_index=True)
-    assembly_date = models.DateField(blank=True)
+    assembly_date = models.DateField(blank=True,
+                                     null=True)
     origin = models.CharField(max_length=20,
                               db_index=True,
                               choices=origin_choices)
