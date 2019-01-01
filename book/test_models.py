@@ -72,4 +72,18 @@ class InspectionTestCase(TestCase):
         self.assertTrue(isinstance(inspection, Inspection))
         self.assertEqual(inspection.__str__(), 'Przegląd: P3.2, dzień wykonania: 12.9.2018')
         self.assertTrue(isinstance(inspection.vehicle, Vehicle))
-        self.assertEqual(inspection.inspection_type, 'P3.2')
+
+class ComplaintTestCase(TestCase):
+
+    def setUp(self):
+        vehicle = create_vehicle('003', 'SA132', 'sa132-003')
+        user = User.objects.create_user('Tom')
+        create_complaint(vehicle=vehicle, user=user)
+
+    def test_complaint_model(self):
+        vehicle = Vehicle.objects.get(id=1)
+        user = User.objects.get(username='Tom')
+        complaint = Complaint.objects.get(id=1)
+        self.assertTrue(isinstance(complaint, Complaint))
+        self.assertEqual(complaint.end_date, None)
+        self.assertEqual(complaint.user, user)
