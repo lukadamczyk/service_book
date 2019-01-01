@@ -39,18 +39,15 @@ class Inspection(models.Model):
         ('P3.1', 'P3.1'),
         ('P3.2', 'P3.2'),
     )
-    date = models.DateField(null=True)
+    date = models.DateField()
     inspection_type = models.CharField(max_length=10,
                                        db_index=True,
-                                       null=True,
                                        choices=choices)
     performer = models.CharField(max_length=30,
-                                 db_index=True,
-                                 null=True)
+                                 db_index=True)
     vehicle = models.ForeignKey(Vehicle,
                                 related_name='vehicles',
-                                on_delete=models.CASCADE,
-                                null=True)
+                                on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('-date',)
