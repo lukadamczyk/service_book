@@ -95,3 +95,21 @@ class ComplaintTestCase(TestCase):
         self.assertTrue(isinstance(complaint, Complaint))
         self.assertEqual(complaint.end_date, None)
         self.assertEqual(complaint.user, user)
+
+
+class FautTestCase(TestCase):
+
+    def setUp(self):
+        vehicle = create_vehicle('001', 'SA132', 'sa132-001')
+        user = User.objects.create_user('Tom')
+        complaint = create_complaint(vehicle=vehicle, user=user)
+        fault = create_fault(complaint, vehicle)
+
+    def test_fault_model(self):
+        fault = Fault.objects.get(zr_number='12345')
+        complaint = Complaint.objects.first()
+        self.assertTrue(isinstance(fault, Fault))
+        self.assertEqual(fault.zr_number, '12345')
+        self.assertEqual(fault.end_date, None)
+        self.assertEqual(fault.complaint, complaint)
+
