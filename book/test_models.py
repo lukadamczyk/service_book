@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Vehicle, Inspection, Complaint, Fault
+from .models import Vehicle, Inspection, Complaint, Fault, Part
 import datetime
 from django.contrib.auth.models import User
 
@@ -53,6 +53,15 @@ def create_fault(complaint, vehicle,zr_number='12345', category='silnik', status
                                  actions=actions,
                                  comments=comments)
     return fault
+
+def create_part(fault, name='przetwornica', index='1234', condition='new', origin='pesa'):
+    part = Part.objects.create(fault=fault,
+                               name=name,
+                               index=index,
+                               condition=condition,
+                               origin=origin)
+    return part
+
 
 class VehicleTestCase(TestCase):
 
