@@ -122,3 +122,18 @@ class FautTestCase(TestCase):
         self.assertEqual(fault.end_date, None)
         self.assertEqual(fault.complaint, complaint)
 
+
+class PartTestCase(TestCase):
+
+    def setUp(self):
+        vehicle = create_vehicle('001', 'SA132', 'sa132-001')
+        user = User.objects.create_user('Tom')
+        complaint = create_complaint(vehicle=vehicle, user=user)
+        fault = create_fault(complaint, vehicle)
+        Part.objects.create(fault=fault)
+
+    def test_part_model(self):
+        part = Part.objects.first()
+        self.assertEqual(isinstance(part, Part))
+        self.assertEqual(part.index, '1234')
+
