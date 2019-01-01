@@ -154,3 +154,33 @@ class Fault(models.Model):
                                 related_name='vehicle_faults',
                                 on_delete=models.CASCADE)
 
+
+class Part(models.Model):
+    condition_choices = (
+        ('new', 'New'),
+        ('used', 'Used'),
+        ('recovered', 'Recovered'),
+    )
+    origin_choices = (
+        ('pesa', 'Pesa'),
+        ('kw', 'Koleje Wielkopolskie'),
+    )
+    name = models.CharField(max_length=30,
+                            db_index=True)
+    index = models.CharField(max_length=50,
+                             blank=True)
+    condition = models.CharField(max_length=10,
+                                 choices=condition_choices,
+                                 db_index=True)
+    assembly_date = models.DateField(blank=True)
+    origin = models.CharField(max_length=20,
+                              db_index=True,
+                              choices=origin_choices)
+    fault = models.ForeignKey(Fault,
+                              related_name='parts',
+                              on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
