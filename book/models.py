@@ -154,6 +154,9 @@ class Fault(models.Model):
                                 related_name='vehicle_faults',
                                 on_delete=models.CASCADE)
 
+    def __str__(self):
+        return '{} - {}'.format(self.name, self.vehicle)
+
 
 class Part(models.Model):
     condition_choices = (
