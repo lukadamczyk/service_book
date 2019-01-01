@@ -12,7 +12,8 @@ def create_vehicle(number='023', vehicle_type='SA132', slug='SA132-023', trolley
                                warranty=warranty)
     return vehicle
 
-def create_inspection(date, vehicle, inspection_type, performer):
+def create_inspection(vehicle, date=datetime.date(2018, 9, 12), inspection_type='P3.2',
+                      performer='PESA'):
     inspection = Inspection.objects.create(date=date,
                             vehicle=vehicle,
                             inspection_type=inspection_type,
