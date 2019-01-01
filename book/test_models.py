@@ -1,9 +1,10 @@
 from django.test import TestCase
 from .models import Vehicle, Inspection, Complaint, Fault
 import datetime
+from django.contrib.auth.models import User
 
 
-def create_vehicle(number, vehicle_type, slug, trolleys, warranty):
+def create_vehicle(number='023', vehicle_type='SA132', slug='SA132-023', trolleys='123453', warranty=datetime.date(2018, 4, 12)):
     vehicle = Vehicle.objects.create(number=number,
                                vehicle_type=vehicle_type,
                                slug=slug,
