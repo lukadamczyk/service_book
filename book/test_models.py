@@ -20,6 +20,13 @@ def create_inspection(vehicle, date=datetime.date(2018, 9, 12), inspection_type=
                             performer=performer)
     return inspection
 
+def create_user(username, email='john@gmail.com', password='password'):
+    user = User.objects.create_user(username=username,
+                                    email=email,
+                                    password=password)
+    return user
+
+
 class VehicleTestCase(TestCase):
 
     def setUp(self):
