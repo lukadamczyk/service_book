@@ -57,15 +57,8 @@ class VehicleTestCase(TestCase):
 class InspectionTestCase(TestCase):
 
     def setUp(self):
-        vehicle = create_vehicle(number='023',
-                       vehicle_type='SA132',
-                       slug='SA132-023',
-                       trolleys='123453',
-                       warranty=datetime.date(2018, 4, 12))
-        create_inspection(date=datetime.date(2018, 9, 12),
-                          vehicle=vehicle,
-                          inspection_type='P3.2',
-                          performer='PESA')
+        vehicle = create_vehicle('001', 'SA132', 'sa132-001')
+        create_inspection(vehicle=vehicle)
 
     def test_inspection_model(self):
         inspection = Inspection.objects.get(id=1)
