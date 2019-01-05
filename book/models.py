@@ -29,6 +29,10 @@ class Vehicle(models.Model):
     trolleys = models.CharField(max_length=10,
                                 unique=True)
     warranty = models.DateField()
+    owner = models.ForeignKey(Owner,
+                              related_name='owners',
+                              on_delete=models.CASCADE,
+                              db_index=True)
 
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
