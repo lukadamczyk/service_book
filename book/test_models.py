@@ -112,7 +112,7 @@ class FautTestCase(TestCase):
         vehicle = create_vehicle('001', 'SA132', 'sa132-001')
         user = User.objects.create_user('Tom')
         complaint = create_complaint(vehicle=vehicle, user=user)
-        fault = create_fault(complaint, vehicle)
+        create_fault(complaint, vehicle)
 
     def test_fault_model(self):
         fault = Fault.objects.get(zr_number='12345')
@@ -130,7 +130,7 @@ class PartTestCase(TestCase):
         user = User.objects.create_user('Tom')
         complaint = create_complaint(vehicle=vehicle, user=user)
         fault = create_fault(complaint, vehicle)
-        Part.objects.create(fault=fault)
+        create_part(fault=fault)
 
     def test_part_model(self):
         part = Part.objects.first()
