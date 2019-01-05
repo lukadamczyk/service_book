@@ -3,6 +3,16 @@ from django.urls import reverse
 from django.conf import settings
 
 
+class Owner(models.Model):
+    name = models.CharField(max_length=20,
+                            unique=True)
+    city = models.CharField(max_length=30)
+    address = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Vehicle(models.Model):
     choices = (
         ('SA132', 'SA132'),
@@ -19,13 +29,17 @@ class Vehicle(models.Model):
     trolleys = models.CharField(max_length=10,
                                 unique=True)
     warranty = models.DateField()
+    owner = models.ForeignKey(Owner,
+                              related_name='owners',
+                              on_delete=models.CASCADE,
+                              db_index=True)
 
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
-    def get_absolute_url(self):
-        return reverse('book:vehicle_detail',
-                       args=[self.id, self.slug])
+    # def get_absolute_url(self):
+    #     return reverse('book:vehicle_detail',
+    #                    args=[self.id, self.slug])
 
 
 class Inspection(models.Model):
@@ -62,10 +76,6 @@ class Complaint(models.Model):
         ('open', 'Open'),
         ('close', 'Close')
     )
-    client_choices = (
-        ('KW', 'Koleje Wielkopolskie'),
-        ('KL', 'Koleje Lubuskie')
-    )
     document_number = models.CharField(max_length=50)
     entry_date = models.DateTimeField()
     updated = models.DateTimeField(auto_now=True)
@@ -75,8 +85,10 @@ class Complaint(models.Model):
                               choices=status_choices)
     tasks = models.TextField(blank=True,
                              null=True)
-    client = models.CharField(max_length=50,
-                              choices=client_choices)
+    client = models.ForeignKey(Owner,
+                               related_name='owners_complaint',
+                               on_delete=models.CASCADE,
+                               db_index=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     vehicle = models.ForeignKey(Vehicle,

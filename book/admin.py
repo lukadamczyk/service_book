@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Vehicle, Inspection, Complaint, Fault, Part
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner
 
 
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('number', 'vehicle_type', 'slug', 'trolleys', 'warranty')
+    list_display = ('number', 'vehicle_type', 'owner','slug', 'trolleys', 'warranty')
     list_filter = ('vehicle_type',)
     prepopulated_fields = {'slug': ('vehicle_type', 'number')}
 
@@ -37,3 +37,9 @@ class PartAdmin(admin.ModelAdmin):
     list_filter = ('name', 'condition')
 
 admin.site.register(Part, PartAdmin)
+
+
+class OwnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city', 'address')
+
+admin.site.register(Owner, OwnerAdmin)
