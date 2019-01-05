@@ -37,9 +37,9 @@ class Vehicle(models.Model):
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
-    def get_absolute_url(self):
-        return reverse('book:vehicle_detail',
-                       args=[self.id, self.slug])
+    # def get_absolute_url(self):
+    #     return reverse('book:vehicle_detail',
+    #                    args=[self.id, self.slug])
 
 
 class Inspection(models.Model):
