@@ -134,6 +134,6 @@ class PartTestCase(TestCase):
 
     def test_part_model(self):
         part = Part.objects.first()
-        self.assertEqual(isinstance(part, Part))
+        self.assertTrue(isinstance(part, Part))
         self.assertEqual(part.index, '1234')
 
