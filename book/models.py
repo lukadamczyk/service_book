@@ -76,10 +76,6 @@ class Complaint(models.Model):
         ('open', 'Open'),
         ('close', 'Close')
     )
-    client_choices = (
-        ('KW', 'Koleje Wielkopolskie'),
-        ('KL', 'Koleje Lubuskie')
-    )
     document_number = models.CharField(max_length=50)
     entry_date = models.DateTimeField()
     updated = models.DateTimeField(auto_now=True)
@@ -89,8 +85,10 @@ class Complaint(models.Model):
                               choices=status_choices)
     tasks = models.TextField(blank=True,
                              null=True)
-    client = models.CharField(max_length=50,
-                              choices=client_choices)
+    client = models.ForeignKey(Owner,
+                               related_name='owners_complaint',
+                               on_delete=models.CASCADE,
+                               db_index=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     vehicle = models.ForeignKey(Vehicle,
