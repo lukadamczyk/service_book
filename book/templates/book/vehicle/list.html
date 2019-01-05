@@ -1,0 +1,22 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% if owner %}
+    {% for vehicle in owner.owners.all %}
+    <div class="col-sm-4">
+    <div class="card text-center" style="width: 18rem;">
+      <img class="card-img-top" src=".../100px180/" alt="Card image cap">
+      <div class="card-body">
+        <h5 class="card-title">{{ vehicle }}</h5>
+        <p class="card-text"></p>
+        <a href="#" class="btn btn-primary">Pokaż</a>
+      </div>
+    </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
