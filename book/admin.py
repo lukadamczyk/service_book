@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle, Inspection, Complaint, Fault, Part
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner
 
 
 class VehicleAdmin(admin.ModelAdmin):
@@ -37,3 +37,9 @@ class PartAdmin(admin.ModelAdmin):
     list_filter = ('name', 'condition')
 
 admin.site.register(Part, PartAdmin)
+
+
+class OwnerAdmin(admin.ModelAdmin):
+    list_display = ('name', 'city', 'address')
+
+admin.site.register(Owner, OwnerAdmin)

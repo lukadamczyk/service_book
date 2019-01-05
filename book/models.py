@@ -3,6 +3,16 @@ from django.urls import reverse
 from django.conf import settings
 
 
+class Owner(models.Model):
+    name = models.CharField(max_length=20,
+                            unique=True)
+    city = models.CharField(max_length=30)
+    address = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Vehicle(models.Model):
     choices = (
         ('SA132', 'SA132'),
