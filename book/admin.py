@@ -3,7 +3,7 @@ from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner
 
 
 class VehicleAdmin(admin.ModelAdmin):
-    list_display = ('number', 'vehicle_type', 'slug', 'trolleys', 'warranty')
+    list_display = ('number', 'vehicle_type', 'owner','slug', 'trolleys', 'warranty')
     list_filter = ('vehicle_type',)
     prepopulated_fields = {'slug': ('vehicle_type', 'number')}
 
