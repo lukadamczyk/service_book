@@ -82,6 +82,9 @@ class Vehicle(models.Model):
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
+    def get_full_name(self):
+        return '{}-{}'.format(self.vehicle_type, self.number)
+
     # def get_absolute_url(self):
     #     return reverse('book:vehicle_detail',
     #                    args=[self.id, self.slug])
