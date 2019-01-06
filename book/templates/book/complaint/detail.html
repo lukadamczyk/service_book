@@ -1,0 +1,23 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% if complaint %}
+      Nr reklamacji: {{ complaint }}<br>
+      Data wystawienia: {{ complaint.entry_date|date:"d-m-Y" }}<br>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    {% if complaint.complaint_faults %}
+    Usterki:<br>
+      {% for fault in complaint.complaint_faults.all %}
+        Usterka: {{ fault.name }} - Status: {{ fault.status }}<br>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

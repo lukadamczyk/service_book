@@ -41,9 +41,8 @@ def create_user(username, email='john@gmail.com', password='password'):
                                     password=password)
     return user
 
-def create_complaint(vehicle, user, client,  updated=None, doc_number='KW 123',
-                     entry_date=datetime.datetime(2018, 2, 1),
-                     status='open',
+def create_complaint(vehicle, user, client, updated=None, doc_number='KW 123',
+                     entry_date=datetime.datetime(2018, 2, 1), status='open',
                      tasks='test'):
     complaint = Complaint.objects.create(document_number=doc_number,
                                          entry_date=entry_date,
@@ -90,6 +89,10 @@ class VehicleTestCase(TestCase):
         self.assertEqual(vehicle.warranty, datetime.date(2018, 4, 12))
         self.assertTrue(isinstance(vehicle, Vehicle))
         # self.assertEqual(vehicle.get_absolute_url(), '/vehicle/1/SA132-023')
+
+    def test_get_full_name(self):
+        vehicle = Vehicle.objects.get(id=1)
+        self.assertEqual(vehicle.get_full_name(), 'SA132-023')
 
 
 class InspectionTestCase(TestCase):

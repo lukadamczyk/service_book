@@ -82,6 +82,9 @@ class Vehicle(models.Model):
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
+    def get_full_name(self):
+        return '{}-{}'.format(self.vehicle_type, self.number)
+
     # def get_absolute_url(self):
     #     return reverse('book:vehicle_detail',
     #                    args=[self.id, self.slug])
@@ -196,7 +199,8 @@ class Fault(models.Model):
     comments = models.TextField(blank=True)
     zr_number = models.CharField(max_length=10,
                                  unique=True,
-                                 blank=True)
+                                 blank=True,
+                                 null=True)
     status = models.CharField(max_length=10,
                               choices=status_choices)
     end_date = models.DateField(blank=True,
