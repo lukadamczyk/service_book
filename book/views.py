@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Owner, Vehicle
+from .models import Owner, Vehicle, Complaint
 
 
 def home(request):
@@ -23,3 +23,11 @@ def vehicle_detail(request, slug):
                   template_name='book/vehicle/detail.html',
                   context={'title': title,
                            'vehicle': vehicle})
+
+def complaint_detail(request, id):
+    complaint = get_object_or_404(Complaint, id=id)
+    title = complaint.vehicle.get_full_name()
+    return render(request,
+                  template_name='book/complaint/detail.html',
+                  context={'title': title,
+                           'complaint': complaint})
