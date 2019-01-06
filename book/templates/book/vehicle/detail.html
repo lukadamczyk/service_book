@@ -13,7 +13,7 @@
   <div class="row">
     {% if vehicle.complaint_vehicles %}
       {% for complaint in vehicle.complaint_vehicles.all %}
-        {{ complaint.entry_date|date:"d-m-Y" }} - {{ complaint }}
+        {{ complaint.entry_date|date:"d-m-Y" }} - {{ complaint }} - <a href="{% url 'book:complaint_detail' complaint.id %}">Pokaż</a>
       {% endfor %}
     {% endif %}
   </div>
