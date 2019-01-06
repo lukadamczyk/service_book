@@ -91,6 +91,10 @@ class VehicleTestCase(TestCase):
         self.assertTrue(isinstance(vehicle, Vehicle))
         # self.assertEqual(vehicle.get_absolute_url(), '/vehicle/1/SA132-023')
 
+    def test_get_full_name(self):
+        vehicle = Vehicle.objects.get(id=1)
+        self.assertEqual(vehicle.get_full_name(), 'SA132-023')
+
 
 class InspectionTestCase(TestCase):
 
