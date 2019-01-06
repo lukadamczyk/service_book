@@ -6,6 +6,7 @@ from django.conf import settings
 class Owner(models.Model):
     name = models.CharField(max_length=20,
                             unique=True)
+    slug = models.CharField(max_length=20)
     city = models.CharField(max_length=30)
     address = models.CharField(max_length=50)
 

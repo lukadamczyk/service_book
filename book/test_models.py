@@ -4,10 +4,11 @@ import datetime
 from django.contrib.auth.models import User
 
 
-def create_owner(name='KW', city='Poznań', address='ul.Kolejowa'):
+def create_owner(name='KW', city='Poznań', address='ul.Kolejowa', slug='kw'):
     owner = Owner.objects.create(name=name,
                                  city=city,
-                                 address=address)
+                                 address=address,
+                                 slug=slug)
     return owner
 
 def create_vehicle(owner, number='023', vehicle_type='SA132', slug='SA132-023', trolleys='123453', \

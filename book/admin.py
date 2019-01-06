@@ -41,5 +41,6 @@ admin.site.register(Part, PartAdmin)
 
 class OwnerAdmin(admin.ModelAdmin):
     list_display = ('name', 'city', 'address')
+    prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(Owner, OwnerAdmin)
