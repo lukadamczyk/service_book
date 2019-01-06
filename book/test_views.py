@@ -18,7 +18,7 @@ class HomeViewTestcase(TestCase):
         self.assertContains(response, 'Koleje Wielkopolskie')
 
 
-class VehicleViewTestCase(TestCase):
+class VehicleListViewTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
