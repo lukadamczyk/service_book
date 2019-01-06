@@ -2,6 +2,12 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
+vehicle_choices = (
+        ('SA132', 'SA132'),
+        ('SA134', 'SA134'),
+        ('SA139', 'SA139'),
+)
+
 
 class Owner(models.Model):
     name = models.CharField(max_length=20,
@@ -13,27 +19,65 @@ class Owner(models.Model):
     def __str__(self):
         return self.name
 
+class Trolleys(models.Model):
+    name = models.CharField(max_length=10,
+                            unique=True)
+    first = models.CharField(max_length=20,
+                             unique=True)
+    second = models.CharField(max_length=20,
+                              unique=True)
+    third = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    fourth = models.CharField(max_length=20,
+                              blank=True,
+                              unique=True,
+                              null=True)
+    fifth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    sixth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    seventh = models.CharField(max_length=20,
+                               blank=True,
+                               unique=True,
+                               null=True)
+    eighth = models.CharField(max_length=20,
+                              blank=True,
+                              unique=True,
+                              null=True)
+    ninth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Vehicle(models.Model):
-    choices = (
-        ('SA132', 'SA132'),
-        ('SA134', 'SA134'),
-        ('SA139', 'SA139'),
-    )
     number = models.CharField(max_length=10)
     vehicle_type = models.CharField(max_length=10,
                                     db_index=True,
-                                    choices=choices)
+                                    choices=vehicle_choices)
     slug = models.SlugField(max_length=20,
                             db_index=True,
                             unique=True)
-    trolleys = models.CharField(max_length=10,
-                                unique=True)
+    trolleys = models.OneToOneField(Trolleys,
+                                 related_name='vehicle_trolleys',
+                                 on_delete=models.CASCADE)
     warranty = models.DateField()
     owner = models.ForeignKey(Owner,
                               related_name='owners',
                               on_delete=models.CASCADE,
                               db_index=True)
+
+    class Meta:
+        ordering = ('number',)
 
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)

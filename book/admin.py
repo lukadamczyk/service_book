@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys
 
 
 class VehicleAdmin(admin.ModelAdmin):
@@ -44,3 +44,10 @@ class OwnerAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(Owner, OwnerAdmin)
+
+
+class TrolleysAdmin(admin.ModelAdmin):
+    list_display = ('name', 'first', 'second', 'third', 'fourth', 'fifth', 'sixth',
+                    'seventh', 'eighth', 'ninth')
+
+admin.site.register(Trolleys, TrolleysAdmin)
