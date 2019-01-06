@@ -76,6 +76,9 @@ class Vehicle(models.Model):
                               on_delete=models.CASCADE,
                               db_index=True)
 
+    class Meta:
+        ordering = ('number',)
+
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
