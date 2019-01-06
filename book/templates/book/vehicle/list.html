@@ -11,7 +11,7 @@
       <div class="card-body">
         <h5 class="card-title">{{ vehicle }}</h5>
         <p class="card-text"></p>
-        <a href="#" class="btn btn-primary">Pokaż</a>
+        <a href="{% url 'book:vehicle_detail' vehicle.slug %}" class="btn btn-primary">Pokaż</a>
       </div>
     </div>
     </div>
