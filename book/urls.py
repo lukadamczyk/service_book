@@ -7,4 +7,5 @@ urlpatterns = [
     path('vehicles/<slug>/', views.vehicle_list, name='vehicle_list'),
     path('vehicle/<slug>/', views.vehicle_detail, name='vehicle_detail'),
     path('complaint/<int:id>/', views.complaint_detail, name='complaint_detail'),
+    path('fault/<int:id>/', views.fault_detail, name='fault_detail'),
 ]

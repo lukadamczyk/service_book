@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint
-from .models import Owner, Vehicle, Complaint
+from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault
+from .models import Owner, Vehicle, Complaint, Fault
 from django.contrib.auth.models import User
 
 
@@ -71,3 +71,24 @@ class ComplaintDetailViewTestCase(TestCase):
         self.assertEqual(response.context['title'], 'SA132-001')
         self.assertEqual(response.context['complaint'], complaint)
         self.assertContains(response, 'reklamacja 32')
+
+
+class FaultDetailViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-004', number='004', vehicle_type='SA132')
+        user = User.objects.create_user('Tom')
+        complaint = create_complaint(vehicle, user, owner, doc_number='reklamacja 32')
+        create_fault(complaint, vehicle, name='usterka drzwi')
+        create_fault(complaint, vehicle, name='usterka silnika', zr_number='234')
+
+    def test_fault_detail_view(self):
+        fault = Fault.objects.get(id=1)
+        response = self.client.get(reverse('book:fault_detail', args=[fault.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/detail.html')
+        self.assertEqual(response.context['title'], 'SA132-004')
+        self.assertEqual(response.context['fault'], fault)
+        self.assertContains(response, 'Usterka: usterka drzwi')
