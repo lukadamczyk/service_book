@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
-from .test_models import create_vehicle, create_owner, create_trolleys
-from .models import Owner, Vehicle
+from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint
+from .models import Owner, Vehicle, Complaint
+from django.contrib.auth.models import User
 
 
 class HomeViewTestcase(TestCase):
@@ -51,3 +52,22 @@ class VehicleDetailViewTestCase(TestCase):
         self.assertEqual(response.context['vehicle'], vehicle)
         self.assertContains(response, 'Pojazd: SA132-001')
 
+
+
+class ComplaintDetailViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        user = User.objects.create_user('Tom')
+        create_complaint(vehicle, user, owner, doc_number='reklamacja 32')
+
+    def test_complaint_detail_view(self):
+        complaint = Complaint.objects.first()
+        response = self.client.get(reverse('book:complaint_detail', args=[complaint.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
+        self.assertEqual(response.context['title'], 'SA132-001')
+        self.assertEqual(response.context['complaint'], complaint)
+        self.assertContains(response, 'reklamacja 32')
