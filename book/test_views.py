@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .test_models import create_vehicle, create_owner
+from .test_models import create_vehicle, create_owner, create_trolleys
 from .models import Owner
 
 
@@ -22,7 +22,8 @@ class VehicleViewTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
-        create_vehicle(owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
 
     def test_vehicle_list_view(self):
         owner = Owner.objects.get(id=1)

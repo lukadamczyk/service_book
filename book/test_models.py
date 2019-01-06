@@ -17,6 +17,8 @@ def create_trolleys(name, first, second):
                                         second=second)
     return trolleys
 
+def create_vehicle(trolleys, owner, number='023', vehicle_type='SA132', slug='SA132-023', warranty=datetime.date(2018,
+                                                                                                                4, 12)):
     vehicle = Vehicle.objects.create(number=number,
                                      vehicle_type=vehicle_type,
                                      slug=slug,
@@ -79,7 +81,8 @@ class VehicleTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner()
-        create_vehicle(owner)
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        create_vehicle(trolleys, owner)
 
     def test_vehicle_model(self):
         vehicle = Vehicle.objects.get(id=1)
@@ -93,7 +96,8 @@ class InspectionTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner()
-        vehicle = create_vehicle(owner, '001', 'SA132', 'sa132-001')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
         create_inspection(vehicle=vehicle)
 
     def test_inspection_model(self):
@@ -108,7 +112,8 @@ class ComplaintTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner()
-        vehicle = create_vehicle(owner, '003', 'SA132', 'sa132-003')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '003', 'SA132', 'sa132-003')
         user = User.objects.create_user('Tom')
         create_complaint(vehicle=vehicle, user=user, client=owner)
 
@@ -125,7 +130,8 @@ class FautTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner()
-        vehicle = create_vehicle(owner, '001', 'SA132', 'sa132-001')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
         user = User.objects.create_user('Tom')
         complaint = create_complaint(vehicle=vehicle, user=user, client=owner)
         create_fault(complaint, vehicle)
@@ -143,7 +149,8 @@ class PartTestCase(TestCase):
 
     def setUp(self):
         owner = create_owner()
-        vehicle = create_vehicle(owner, '001', 'SA132', 'sa132-001')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
         user = User.objects.create_user('Tom')
         complaint = create_complaint(vehicle=vehicle, user=user, client=owner)
         fault = create_fault(complaint, vehicle)
