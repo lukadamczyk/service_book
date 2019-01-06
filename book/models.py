@@ -13,6 +13,45 @@ class Owner(models.Model):
     def __str__(self):
         return self.name
 
+class Trolleys(models.Model):
+    name = models.CharField(max_length=10,
+                            unique=True)
+    first = models.CharField(max_length=20,
+                             unique=True)
+    second = models.CharField(max_length=20,
+                              unique=True)
+    third = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    fourth = models.CharField(max_length=20,
+                              blank=True,
+                              unique=True,
+                              null=True)
+    fifth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    sixth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+    seventh = models.CharField(max_length=20,
+                               blank=True,
+                               unique=True,
+                               null=True)
+    eighth = models.CharField(max_length=20,
+                              blank=True,
+                              unique=True,
+                              null=True)
+    ninth = models.CharField(max_length=20,
+                             blank=True,
+                             unique=True,
+                             null=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Vehicle(models.Model):
     choices = (
