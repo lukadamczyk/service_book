@@ -2,6 +2,12 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
+vehicle_choices = (
+        ('SA132', 'SA132'),
+        ('SA134', 'SA134'),
+        ('SA139', 'SA139'),
+)
+
 
 class Owner(models.Model):
     name = models.CharField(max_length=20,
@@ -54,15 +60,10 @@ class Trolleys(models.Model):
 
 
 class Vehicle(models.Model):
-    choices = (
-        ('SA132', 'SA132'),
-        ('SA134', 'SA134'),
-        ('SA139', 'SA139'),
-    )
     number = models.CharField(max_length=10)
     vehicle_type = models.CharField(max_length=10,
                                     db_index=True,
-                                    choices=choices)
+                                    choices=vehicle_choices)
     slug = models.SlugField(max_length=20,
                             db_index=True,
                             unique=True)
