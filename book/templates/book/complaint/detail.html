@@ -15,7 +15,9 @@
     {% if complaint.complaint_faults %}
     Usterki:<br>
       {% for fault in complaint.complaint_faults.all %}
-        Usterka: {{ fault.name }} - Status: {{ fault.status }}<br>
+        <div class="container">
+          Usterka: {{ fault.name }} Status: {{ fault.status }} <a href="{% url 'book:fault_detail' fault.id %}">Pokaż</a>
+        </div>
       {% endfor %}
     {% endif %}
   </div>
