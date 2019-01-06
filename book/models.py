@@ -66,8 +66,9 @@ class Vehicle(models.Model):
     slug = models.SlugField(max_length=20,
                             db_index=True,
                             unique=True)
-    trolleys = models.CharField(max_length=10,
-                                unique=True)
+    trolleys = models.OneToOneField(Trolleys,
+                                 related_name='vehicle_trolleys',
+                                 on_delete=models.CASCADE)
     warranty = models.DateField()
     owner = models.ForeignKey(Owner,
                               related_name='owners',
