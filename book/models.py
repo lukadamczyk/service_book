@@ -199,7 +199,8 @@ class Fault(models.Model):
     comments = models.TextField(blank=True)
     zr_number = models.CharField(max_length=10,
                                  unique=True,
-                                 blank=True)
+                                 blank=True,
+                                 null=True)
     status = models.CharField(max_length=10,
                               choices=status_choices)
     end_date = models.DateField(blank=True,
