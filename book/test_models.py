@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys
 import datetime
 from django.contrib.auth.models import User
 
@@ -11,8 +11,12 @@ def create_owner(name='KW', city='Poznań', address='ul.Kolejowa', slug='kw'):
                                  slug=slug)
     return owner
 
-def create_vehicle(owner, number='023', vehicle_type='SA132', slug='SA132-023', trolleys='123453', \
-                                                                                        warranty=datetime.date(2018, 4, 12)):
+def create_trolleys(name, first, second):
+    trolleys = Trolleys.objects.create(name=name,
+                                       first=first,
+                                        second=second)
+    return trolleys
+
     vehicle = Vehicle.objects.create(number=number,
                                      vehicle_type=vehicle_type,
                                      slug=slug,
@@ -161,3 +165,14 @@ class OwnerTestCase(TestCase):
         self.assertTrue(isinstance(owner, Owner))
         self.assertEqual(owner.name, 'KW')
 
+
+class TrolleysTestCase(TestCase):
+
+    def setUp(self):
+        create_trolleys(name='sa123',first='123', second='234')
+
+    def test_trolleys_model(self):
+        trolleys = Trolleys.objects.first()
+        self.assertTrue(isinstance(trolleys, Trolleys))
+        self.assertEqual(trolleys.first, '123')
+        self.assertEqual(trolleys.fifth, None)
