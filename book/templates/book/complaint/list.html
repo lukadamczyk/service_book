@@ -1,0 +1,68 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% if complaints %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" class="align-middle text-center">Lp</th>
+        <th scope="col" class="align-middle text-center">Nr dokumentu</th>
+        <th scope="col" class="align-middle text-center">Pojazd</th>
+        <th scope="col" class="align-middle text-center">Data wejścia reklamacji</th>
+        <th scope="col" class="align-middle text-center">Data usunięcia Usterki</th>
+        <th scope="col" class="align-middle text-center">Przesunięto do</th>
+        <th scope="col" class="align-middle text-center">Usterka</th>
+        <th scope="col" class="align-middle text-center">Podjęte działania</th>
+        <th scope="col" class="align-middle text-center">Uwagi</th>
+        <th scope="col" class="align-middle text-center">Potrzeby</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for complaint in complaints %}
+      <tr>
+        <th scope="row" class="text-center">{{ forloop.counter }}</th>
+        <td>{{ complaint.document_number }}</td>
+        <td>{{ complaint.vehicle.get_full_name }}</td>
+        <td>{{ complaint.entry_date|date:"d-m-Y" }}</td>
+        <td>
+          <ul>
+            {% for fault in complaint.complaint_faults.all %}
+              {% if fault.status == 'close' and fault.end_date %}
+                <li>{{ forloop.counter }}. {{ fault.end_date|date:'d-m-Y' }}</li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </td>
+        <td></td>
+        <td>
+          <ul>
+            {% for fault in complaint.complaint_faults.all %}
+            <li>{{ forloop.counter }}.{{ fault.name }} - {{ fault.status }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <ul>
+            {% for fault in complaint.complaint_faults.all %}
+            <li>{{ forloop.counter }}.{{ fault.actions }}</li>
+            {% endfor %}
+          </ul>
+        </td>
+        <td></td>
+        <td>
+          <ul>
+            {% for fault in complaint.complaint_faults.all %}
+              {% if fault.comments %}
+                <li>{{ forloop.counter }}.{{ fault.comments }}</li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
