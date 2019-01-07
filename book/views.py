@@ -24,6 +24,13 @@ def vehicle_detail(request, slug):
                   context={'title': title,
                            'vehicle': vehicle})
 
+def complaint_list(request):
+    complaints = Complaint.objects.all()
+    return render(request,
+                  template_name='book/complaint/list.html',
+                  context={'title': 'Reklamacje',
+                           'complaints': complaints})
+
 def complaint_detail(request, id):
     complaint = get_object_or_404(Complaint, id=id)
     title = complaint.vehicle.get_full_name()
