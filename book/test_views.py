@@ -4,6 +4,8 @@ from .test_models import create_vehicle, create_owner, create_trolleys, create_c
 from .models import Owner, Vehicle, Complaint, Fault
 from django.contrib.auth.models import User
 
+import datetime
+
 
 class HomeViewTestcase(TestCase):
 
@@ -72,6 +74,29 @@ class ComplaintDetailViewTestCase(TestCase):
         self.assertEqual(response.context['complaint'], complaint)
         self.assertContains(response, 'reklamacja 32')
 
+
+class ComplaintListViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        user = User.objects.create_user('Tom')
+        create_complaint(vehicle, user, owner, doc_number='reklamacja 32', entry_date=datetime.date(2019, 1, 1))
+        create_complaint(vehicle, user, owner, doc_number='reklamacja 33', entry_date=datetime.date(2019, 1, 3))
+        create_complaint(vehicle, user, owner, doc_number='reklamacja 34', entry_date=datetime.date(2019, 1, 12))
+
+    def test_complaint_list_view(self):
+        complaints = Complaint.objects.all()
+        response = self.client.get(reverse('book:complaint_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/list.html')
+        self.assertEqual(response.context['title'], 'Reklamacje')
+        self.assertQuerysetEqual(response.context['complaints'],  ['<Complaint: reklamacja 34>',
+                                                                   '<Complaint: reklamacja 33>',
+                                                                   '<Complaint: reklamacja 32>'])
+        self.assertEqual(len(response.context['complaints']), 3)
+        self.assertContains(response, 'reklamacja 33')
 
 class FaultDetailViewTestCase(TestCase):
 
