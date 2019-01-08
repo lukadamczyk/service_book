@@ -9,4 +9,5 @@ urlpatterns = [
     path('complaint/', views.complaint_list, name='complaint_list'),
     path('complaint/<int:id>/', views.complaint_detail, name='complaint_detail'),
     path('fault/<int:id>/', views.fault_detail, name='fault_detail'),
+    path('fault/', views.fault_list, name='fault_list'),
 ]
