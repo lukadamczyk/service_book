@@ -202,8 +202,11 @@ class Fault(models.Model):
     status = models.CharField(max_length=10,
                               choices=status_choices)
     entry_date = models.DateField()
+    moved_date = models.DateField(blank=True,
+                                  null=True)
     end_date = models.DateField(blank=True,
                                 null=True)
+    need = models.TextField()
     complaint = models.ForeignKey(Complaint,
                                   related_name='complaint_faults',
                                   on_delete=models.CASCADE)
