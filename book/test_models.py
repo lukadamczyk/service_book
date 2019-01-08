@@ -41,8 +41,8 @@ def create_user(username, email='john@gmail.com', password='password'):
                                     password=password)
     return user
 
-def create_complaint(vehicle, user, client, updated=None, doc_number='KW 123',
-                     entry_date=datetime.datetime(2018, 2, 1), status='open',
+def create_complaint(vehicle, client, updated=None, doc_number='KW 123',
+                     entry_date=datetime.date(2018, 2, 1), status='open',
                      tasks='test'):
     complaint = Complaint.objects.create(document_number=doc_number,
                                          entry_date=entry_date,
@@ -50,8 +50,7 @@ def create_complaint(vehicle, user, client, updated=None, doc_number='KW 123',
                                          status=status,
                                          tasks=tasks,
                                          client=client,
-                                         vehicle=vehicle,
-                                         user=user)
+                                         vehicle=vehicle)
     return complaint
 
 def create_fault(complaint, vehicle, name='usterka', zr_number='12345', category='silnik', status='open',
@@ -119,16 +118,13 @@ class ComplaintTestCase(TestCase):
         owner = create_owner()
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         vehicle = create_vehicle(trolleys, owner, '003', 'SA132', 'sa132-003')
-        user = User.objects.create_user('Tom')
-        create_complaint(vehicle=vehicle, user=user, client=owner)
+        create_complaint(vehicle=vehicle, client=owner)
 
     def test_complaint_model(self):
         vehicle = Vehicle.objects.get(id=1)
-        user = User.objects.get(username='Tom')
         complaint = Complaint.objects.get(id=1)
         self.assertTrue(isinstance(complaint, Complaint))
         self.assertEqual(complaint.end_date, None)
-        self.assertEqual(complaint.user, user)
 
 
 class FautTestCase(TestCase):
@@ -137,8 +133,7 @@ class FautTestCase(TestCase):
         owner = create_owner()
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
-        user = User.objects.create_user('Tom')
-        complaint = create_complaint(vehicle=vehicle, user=user, client=owner)
+        complaint = create_complaint(vehicle=vehicle, client=owner)
         create_fault(complaint, vehicle)
 
     def test_fault_model(self):
@@ -156,8 +151,7 @@ class PartTestCase(TestCase):
         owner = create_owner()
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
-        user = User.objects.create_user('Tom')
-        complaint = create_complaint(vehicle=vehicle, user=user, client=owner)
+        complaint = create_complaint(vehicle=vehicle, client=owner)
         fault = create_fault(complaint, vehicle)
         create_part(fault=fault)
 
