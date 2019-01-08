@@ -137,8 +137,6 @@ class Complaint(models.Model):
                                related_name='owners_complaint',
                                on_delete=models.CASCADE,
                                db_index=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-                             on_delete=models.CASCADE)
     vehicle = models.ForeignKey(Vehicle,
                                 related_name='complaint_vehicles',
                                 on_delete=models.CASCADE)
