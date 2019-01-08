@@ -125,9 +125,9 @@ class Complaint(models.Model):
         ('close', 'Close')
     )
     document_number = models.CharField(max_length=50)
-    entry_date = models.DateTimeField()
-    updated = models.DateTimeField(auto_now=True)
-    end_date = models.DateTimeField(blank=True,
+    entry_date = models.DateField()
+    updated = models.DateField(auto_now=True)
+    end_date = models.DateField(blank=True,
                                     null=True)
     status = models.CharField(max_length=10,
                               choices=status_choices)
