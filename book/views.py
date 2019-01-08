@@ -46,3 +46,11 @@ def fault_detail(request, id):
                   template_name='book/fault/detail.html',
                   context={'title': title,
                            'fault': fault})
+
+def fault_list(request):
+    faults = Fault.objects.all()
+    title = 'Usterki'
+    return render(request,
+                  template_name='book/fault/list.html',
+                  context={'title': title,
+                           'faults': faults})
