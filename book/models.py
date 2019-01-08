@@ -218,7 +218,7 @@ class Fault(models.Model):
         ordering = ('entry_date',)
 
     def __str__(self):
-        return '{} - {}'.format(self.name, self.vehicle)
+        return self.name
 
 
 class Part(models.Model):
