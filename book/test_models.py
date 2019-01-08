@@ -56,7 +56,8 @@ def create_complaint(vehicle, client, updated=None, doc_number='KW 123',
 def create_fault(complaint, vehicle, name='usterka', zr_number='12345', category='silnik', status='open',
                  description='test',
                  actions='actions',
-                 comments='none'):
+                 comments='none',
+                 entry_date=datetime.date(2019, 1, 1)):
     fault = Fault.objects.create(complaint=complaint,
                                  vehicle=vehicle,
                                  zr_number=zr_number,
@@ -65,7 +66,8 @@ def create_fault(complaint, vehicle, name='usterka', zr_number='12345', category
                                  description=description,
                                  actions=actions,
                                  comments=comments,
-                                 name=name)
+                                 name=name,
+                                 entry_date=entry_date)
     return fault
 
 def create_part(fault, name='przetwornica', index='1234', condition='new', origin='pesa'):
