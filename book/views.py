@@ -62,3 +62,11 @@ def inspection_list(request):
                   template_name='book/inspection/list.html',
                   context={'title': title,
                            'inspections': inspections})
+
+def inspection_detail(request, id):
+    inspection = get_object_or_404(Inspection, id=id)
+    title = 'Przegląd'
+    return render(request,
+                  template_name='book/inspection/detail.html',
+                  context={'title': title,
+                           'inspection': inspection})
