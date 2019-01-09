@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
 from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault, create_inspection
-from .models import Owner, Vehicle, Complaint, Fault
+from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
 
 import datetime
@@ -165,4 +165,24 @@ class InspectionListViewTestCase(TestCase):
                                                                    '2.1.2019>',
                                                                    '<Inspection: Przegląd: P2.1, dzień wykonania: '
                                                                    '1.1.2019>'])
+        self.assertContains(response, 'P2.1')
+
+
+class InspectionDetailViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 2), inspection_type='P1.1')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 1), inspection_type='P2.1')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 12), inspection_type='P1.3')
+
+    def test_inspection_detail_view(self):
+        inspection = Inspection.objects.get(id=2)
+        response = self.client.get(reverse('book:inspection_detail', args=[inspection.id]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/inspection/detail.html')
+        self.assertEqual(response.context['title'], 'Przegląd')
+        self.assertEqual(response.context['inspection'], inspection)
         self.assertContains(response, 'P2.1')
