@@ -201,8 +201,12 @@ class Fault(models.Model):
                                  null=True)
     status = models.CharField(max_length=10,
                               choices=status_choices)
+    entry_date = models.DateField()
+    moved_date = models.DateField(blank=True,
+                                  null=True)
     end_date = models.DateField(blank=True,
                                 null=True)
+    need = models.TextField()
     complaint = models.ForeignKey(Complaint,
                                   related_name='complaint_faults',
                                   on_delete=models.CASCADE)
@@ -210,8 +214,11 @@ class Fault(models.Model):
                                 related_name='vehicle_faults',
                                 on_delete=models.CASCADE)
 
+    class Meta:
+        ordering = ('entry_date',)
+
     def __str__(self):
-        return '{} - {}'.format(self.name, self.vehicle)
+        return self.name
 
 
 class Part(models.Model):

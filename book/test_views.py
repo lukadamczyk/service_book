@@ -114,3 +114,31 @@ class FaultDetailViewTestCase(TestCase):
         self.assertEqual(response.context['title'], 'SA132-004')
         self.assertEqual(response.context['fault'], fault)
         self.assertContains(response, 'Usterka: usterka drzwi')
+
+
+class FaultListViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys1 = create_trolleys(name='sa123', first='123', second='2334')
+        trolleys2 = create_trolleys(name='sa1232', first='13', second='2324')
+        trolleys3 = create_trolleys(name='sa1233', first='1213', second='2134')
+        vehicle1 = create_vehicle(trolleys1, owner, slug='SA132-004', number='004', vehicle_type='SA132')
+        vehicle2 = create_vehicle(trolleys2, owner, slug='SA132-020', number='020', vehicle_type='SA132')
+        vehicle3 = create_vehicle(trolleys3, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        complaint1 = create_complaint(vehicle1, owner, doc_number='reklamacja 32')
+        complaint2 = create_complaint(vehicle2, owner, doc_number='reklamacja 32')
+        complaint3 = create_complaint(vehicle3, owner, doc_number='reklamacja 32')
+        create_fault(complaint1, vehicle1, name='usterka drzwi', entry_date=datetime.date(2019,1,2))
+        create_fault(complaint2, vehicle2, name='usterka WC', zr_number='234', entry_date=datetime.date(2019,1,1))
+        create_fault(complaint3, vehicle3, name='usterka silnika', zr_number='214', entry_date=datetime.date(2019,1,10))
+
+    def test_fault_list_view(self):
+        response = self.client.get(reverse('book:fault_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertEqual(response.context['title'], 'Usterki')
+        self.assertQuerysetEqual(response.context['faults'], ['<Fault: usterka WC>',
+                                                      '<Fault: usterka drzwi>',
+                                                      '<Fault: usterka silnika>'])
+        self.assertContains(response, 'usterka drzwi')
