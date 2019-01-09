@@ -1,0 +1,25 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% if inspection %}
+      Typ przeglądu: {{ inspection.inspection_type }}<br>
+      Data: {{ inspection.date|date:'d-m-Y' }}<br>
+    {% endif %}
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    {% if complaint.complaint_faults %}
+    Usterki:<br>
+      {% for fault in complaint.complaint_faults.all %}
+        <div class="container">
+          Usterka: {{ fault.name }} Status: {{ fault.status }} <a href="{% url 'book:fault_detail' fault.id %}">Pokaż</a>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

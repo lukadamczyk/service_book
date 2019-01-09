@@ -1,0 +1,29 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  {% if inspections %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" class="align-middle text-center">Lp</th>
+        <th scope="col" class="align-middle text-center">Przegląd</th>
+        <th scope="col" class="align-middle text-center">Pojazd</th>
+        <th scope="col" class="align-middle text-center">Data</th>
+        <th scope="col" class="align-middle text-center">Wykonawca</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inspection in inspections %}
+      <tr>
+        <th scope="row" class="text-center">{{ forloop.counter }}</th>
+        <td class="align-middle text-center"><a href="#">{{ inspection.inspection_type }}</a></td>
+        <td class="align-middle text-center">{{ inspection.vehicle.get_full_name }}</td>
+        <td class="align-middle text-center">{{ inspection.date|date:'d-m-Y' }}</td>
+        <td class="align-middle text-center">{{ inspection.performer }}</td>
+    </tbody>
+    {% endfor %}
+  </table>
+  {% endif %}
+</div>
+{% endblock %}
