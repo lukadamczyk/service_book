@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault
+from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault, create_inspection
 from .models import Owner, Vehicle, Complaint, Fault
 from django.contrib.auth.models import User
 
@@ -142,3 +142,27 @@ class FaultListViewTestCase(TestCase):
                                                       '<Fault: usterka drzwi>',
                                                       '<Fault: usterka silnika>'])
         self.assertContains(response, 'usterka drzwi')
+
+
+class InspectionListViewTestCase(TestCase):
+
+    def setUp(self):
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 2), inspection_type='P1.1')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 1), inspection_type='P2.1')
+        create_inspection(vehicle, date=datetime.date(2019, 1, 12), inspection_type='P1.3')
+
+    def test_inspection_list_view(self):
+        response = self.client.get(reverse('book:inspection_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/inspection/list.html')
+        self.assertEqual(response.context['title'], 'Przeglądy')
+        self.assertQuerysetEqual(response.context['inspections'], ['<Inspection: Przegląd: P1.3, dzień wykonania: '
+                                                                   '12.1.2019>',
+                                                                   '<Inspection: Przegląd: P1.1, dzień wykonania: '
+                                                                   '2.1.2019>',
+                                                                   '<Inspection: Przegląd: P2.1, dzień wykonania: '
+                                                                   '1.1.2019>'])
+        self.assertContains(response, 'P2.1')
