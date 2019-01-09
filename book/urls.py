@@ -10,4 +10,5 @@ urlpatterns = [
     path('complaint/<int:id>/', views.complaint_detail, name='complaint_detail'),
     path('fault/<int:id>/', views.fault_detail, name='fault_detail'),
     path('fault/', views.fault_list, name='fault_list'),
+    path('inspection/', views.inspection_list, name='inspection_list'),
 ]
