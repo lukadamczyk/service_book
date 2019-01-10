@@ -4,6 +4,7 @@ from django.conf import settings
 
 vehicle_choices = (
         ('SA132', 'SA132'),
+        ('SA133', 'SA133'),
         ('SA134', 'SA134'),
         ('SA139', 'SA139'),
 )
@@ -77,7 +78,7 @@ class Vehicle(models.Model):
                               db_index=True)
 
     class Meta:
-        ordering = ('number',)
+        ordering = ('vehicle_type', 'number')
 
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
@@ -206,7 +207,7 @@ class Fault(models.Model):
                                   null=True)
     end_date = models.DateField(blank=True,
                                 null=True)
-    need = models.TextField()
+    need = models.TextField(blank=True)
     complaint = models.ForeignKey(Complaint,
                                   related_name='complaint_faults',
                                   on_delete=models.CASCADE)
