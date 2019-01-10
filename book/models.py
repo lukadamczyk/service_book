@@ -207,7 +207,7 @@ class Fault(models.Model):
                                   null=True)
     end_date = models.DateField(blank=True,
                                 null=True)
-    need = models.TextField()
+    need = models.TextField(blank=True)
     complaint = models.ForeignKey(Complaint,
                                   related_name='complaint_faults',
                                   on_delete=models.CASCADE)
