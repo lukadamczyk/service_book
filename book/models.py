@@ -4,6 +4,7 @@ from django.conf import settings
 
 vehicle_choices = (
         ('SA132', 'SA132'),
+        ('SA133', 'SA133'),
         ('SA134', 'SA134'),
         ('SA139', 'SA139'),
 )
