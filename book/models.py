@@ -78,7 +78,7 @@ class Vehicle(models.Model):
                               db_index=True)
 
     class Meta:
-        ordering = ('number',)
+        ordering = ('vehicle_type', 'number')
 
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
