@@ -84,18 +84,18 @@ class VehicleTestCase(TestCase):
     def setUp(self):
         owner = create_owner()
         trolleys = create_trolleys(name='sa123', first='123', second='234')
-        create_vehicle(trolleys, owner)
+        create_vehicle(trolleys, owner, number='007', vehicle_type='SA132')
 
     def test_vehicle_model(self):
-        vehicle = Vehicle.objects.get(id=1)
-        self.assertEqual(vehicle.__str__(), 'Pojazd: SA132-023')
+        vehicle = Vehicle.objects.get(number='007')
+        self.assertEqual(vehicle.__str__(), 'Pojazd: SA132-007')
         self.assertEqual(vehicle.warranty, datetime.date(2018, 4, 12))
         self.assertTrue(isinstance(vehicle, Vehicle))
         # self.assertEqual(vehicle.get_absolute_url(), '/vehicle/1/SA132-023')
 
     def test_get_full_name(self):
-        vehicle = Vehicle.objects.get(id=1)
-        self.assertEqual(vehicle.get_full_name(), 'SA132-023')
+        vehicle = Vehicle.objects.get(number='007')
+        self.assertEqual(vehicle.get_full_name(), 'SA132-007')
 
 
 class InspectionTestCase(TestCase):

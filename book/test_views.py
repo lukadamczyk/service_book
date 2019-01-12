@@ -29,7 +29,7 @@ class VehicleListViewTestCase(TestCase):
         create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
 
     def test_vehicle_list_view(self):
-        owner = Owner.objects.get(id=1)
+        owner = Owner.objects.get(name='Koleje Dolnośląskie')
         response = self.client.get(reverse('book:vehicle_list', args=['koleje-dolnośląskie']))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/vehicle/list.html')
@@ -107,7 +107,7 @@ class FaultDetailViewTestCase(TestCase):
         create_fault(complaint, vehicle, name='usterka silnika', zr_number='234')
 
     def test_fault_detail_view(self):
-        fault = Fault.objects.get(id=1)
+        fault = Fault.objects.get(name='usterka drzwi')
         response = self.client.get(reverse('book:fault_detail', args=[fault.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault/detail.html')
@@ -185,4 +185,4 @@ class InspectionDetailViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'book/inspection/detail.html')
         self.assertEqual(response.context['title'], 'Przegląd')
         self.assertEqual(response.context['inspection'], inspection)
-        self.assertContains(response, 'P2.1')
+        self.assertContains(response, 'P1.1')
