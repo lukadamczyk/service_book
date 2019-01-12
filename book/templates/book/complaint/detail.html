@@ -6,10 +6,10 @@
     {% if complaint %}
       Nr reklamacji: {{ complaint }}<br>
       Data wystawienia: {{ complaint.entry_date|date:"d-m-Y" }}<br>
+      Status reklamacji: {{ complaint.status }}
     {% endif %}
   </div>
 </div>
-
 <div class="container">
   <div class="row">
     {% if complaint.complaint_faults %}
