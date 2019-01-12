@@ -17,7 +17,7 @@
       {% for inspection in inspections %}
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter }}</th>
-        <td class="align-middle text-center"><a href="#">{{ inspection.inspection_type }}</a></td>
+        <td class="align-middle text-center"><a href="{% url 'book:inspection_detail' inspection.id %}">{{ inspection.inspection_type }}</a></td>
         <td class="align-middle text-center">{{ inspection.vehicle.get_full_name }}</td>
         <td class="align-middle text-center">{{ inspection.date|date:'d-m-Y' }}</td>
         <td class="align-middle text-center">{{ inspection.performer }}</td>
