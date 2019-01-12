@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
+from django.core.paginator import Paginator
 
 
 def home(request):
@@ -25,7 +26,10 @@ def vehicle_detail(request, slug):
                            'vehicle': vehicle})
 
 def complaint_list(request):
-    complaints = Complaint.objects.all()
+    complaints_list = Complaint.objects.all()
+    paginator = Paginator(complaints_list, 10)
+    page = request.GET.get('page')
+    complaints = paginator.get_page(page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',

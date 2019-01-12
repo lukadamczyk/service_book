@@ -33,6 +33,16 @@
     </tbody>
     {% endfor %}
   </table>
+  Strona {{ complaints.number }}
+  {% if complaints.has_previous %}
+    {% if complaints.has_previous != 1 %}
+      <a href="?page=1">1</a>
+    {% endif %}
+    <a href="?page={{ complaints.previous_page_number }}"><<</a>
+  {% endif %}
+  {% if complaints.has_next %}
+    <a href="?page={{ complaints.next_page_number }}">>></a>
+  {% endif %}
   {% endif %}
 </div>
 {% endblock %}
