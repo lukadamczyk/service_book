@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container">
   {% if complaints %}
+  <form action="." method="GET" class="form-inline">
+    <!-- {% csrf_token %} -->
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+  </form>
   <table class="table">
     <thead>
       <tr>
@@ -35,13 +40,12 @@
   </table>
   Strona {{ complaints.number }}
   {% if complaints.has_previous %}
-    {% if complaints.has_previous != 1 %}
-      <a href="?page=1">1</a>
-    {% endif %}
-    <a href="?page={{ complaints.previous_page_number }}"><<</a>
+  {% if complaints.has_previous != 1 %}
+  <a href="?page=1">1</a>
   {% endif %}
-  {% if complaints.has_next %}
-    <a href="?page={{ complaints.next_page_number }}">>></a>
+  <a href="?page={{ complaints.previous_page_number }}">
+    <<</a> {% endif %} {% if complaints.has_next %} <a href="?page={{ complaints.next_page_number }}">>>
+  </a>
   {% endif %}
   {% endif %}
 </div>
