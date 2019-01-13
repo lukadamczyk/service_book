@@ -12,4 +12,5 @@ urlpatterns = [
     path('fault/', views.fault_list, name='fault_list'),
     path('inspection/', views.inspection_list, name='inspection_list'),
     path('inspection/<int:id>/', views.inspection_detail, name='inspection_detail'),
+    path('export/', views.export_complaints_xls, name='export_complaints_xls'),
 ]
