@@ -5,6 +5,7 @@ from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
 from .forms import FilterComplaintsForm
 
+
 import datetime
 
 
@@ -12,6 +13,11 @@ class HomeViewTestcase(TestCase):
 
     def setUp(self):
         create_owner(name='Koleje Wielkopolskie')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_home_view(self):
         response = self.client.get(reverse('book:home'))
@@ -28,6 +34,11 @@ class VehicleListViewTestCase(TestCase):
         owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_vehicle_list_view(self):
         owner = Owner.objects.get(name='Koleje Dolnośląskie')
@@ -45,6 +56,11 @@ class VehicleDetailViewTestCase(TestCase):
         owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_vehicle_detail_view(self):
         vehicle = Vehicle.objects.first()
@@ -64,6 +80,11 @@ class ComplaintDetailViewTestCase(TestCase):
         trolleys = create_trolleys(name='sa123', first='123', second='234')
         vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
         create_complaint(vehicle, owner, doc_number='reklamacja 32')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_complaint_detail_view(self):
         complaint = Complaint.objects.first()
@@ -85,6 +106,11 @@ class ComplaintListViewTestCase(TestCase):
         create_complaint(vehicle, owner, doc_number='reklamacja 33', entry_date=datetime.date(2019, 1, 3))
         create_complaint(vehicle, owner, doc_number='reklamacja 34', entry_date=datetime.date(2019, 1, 12),
                          status='close')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_complaint_list_view(self):
         complaints = Complaint.objects.all()
@@ -128,6 +154,11 @@ class FaultDetailViewTestCase(TestCase):
         complaint = create_complaint(vehicle, owner, doc_number='reklamacja 32')
         create_fault(complaint, vehicle, name='usterka drzwi')
         create_fault(complaint, vehicle, name='usterka silnika', zr_number='234')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_fault_detail_view(self):
         fault = Fault.objects.get(name='usterka drzwi')
@@ -155,6 +186,11 @@ class FaultListViewTestCase(TestCase):
         create_fault(complaint1, vehicle1, name='usterka drzwi', entry_date=datetime.date(2019,1,2))
         create_fault(complaint2, vehicle2, name='usterka WC', zr_number='234', entry_date=datetime.date(2019,1,1))
         create_fault(complaint3, vehicle3, name='usterka silnika', zr_number='214', entry_date=datetime.date(2019,1,10))
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_fault_list_view(self):
         response = self.client.get(reverse('book:fault_list'))
@@ -176,6 +212,11 @@ class InspectionListViewTestCase(TestCase):
         create_inspection(vehicle, date=datetime.date(2019, 1, 2), inspection_type='P1.1')
         create_inspection(vehicle, date=datetime.date(2019, 1, 1), inspection_type='P2.1')
         create_inspection(vehicle, date=datetime.date(2019, 1, 12), inspection_type='P1.3')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_inspection_list_view(self):
         response = self.client.get(reverse('book:inspection_list'))
@@ -200,6 +241,11 @@ class InspectionDetailViewTestCase(TestCase):
         create_inspection(vehicle, date=datetime.date(2019, 1, 2), inspection_type='P1.1')
         create_inspection(vehicle, date=datetime.date(2019, 1, 1), inspection_type='P2.1')
         create_inspection(vehicle, date=datetime.date(2019, 1, 12), inspection_type='P1.3')
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
 
     def test_inspection_detail_view(self):
         inspection = Inspection.objects.get(id=2)
@@ -209,3 +255,4 @@ class InspectionDetailViewTestCase(TestCase):
         self.assertEqual(response.context['title'], 'Przegląd')
         self.assertEqual(response.context['inspection'], inspection)
         self.assertContains(response, 'P1.1')
+

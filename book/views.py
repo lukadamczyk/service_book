@@ -2,9 +2,11 @@ from django.shortcuts import render, get_object_or_404
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm
-from django.db.models import Q
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
+@login_required()
 def home(request):
     owners = Owner.objects.all()
     return render(request,
@@ -12,6 +14,7 @@ def home(request):
                   context={'title': 'Książka serwisowa',
                            'owners': owners})
 
+@login_required()
 def vehicle_list(request, slug):
     owner = get_object_or_404(Owner, slug=slug)
     return render(request,
@@ -19,6 +22,7 @@ def vehicle_list(request, slug):
                   context={'title': owner.name,
                            'owner': owner})
 
+@login_required()
 def vehicle_detail(request, slug):
     vehicle = get_object_or_404(Vehicle, slug=slug)
     title = '{}-{}'.format(vehicle.vehicle_type, vehicle.number)
@@ -27,6 +31,7 @@ def vehicle_detail(request, slug):
                   context={'title': title,
                            'vehicle': vehicle})
 
+@login_required()
 def complaint_list(request):
     complaints_list = Complaint.objects.all()
     page = request.GET.get('page')
@@ -56,6 +61,7 @@ def complaint_list(request):
                            'complaints': complaints,
                            'form': form})
 
+@login_required()
 def complaint_detail(request, id):
     complaint = get_object_or_404(Complaint, id=id)
     title = complaint.vehicle.get_full_name()
@@ -72,6 +78,7 @@ def fault_detail(request, id):
                   context={'title': title,
                            'fault': fault})
 
+@login_required()
 def fault_list(request):
     faults = Fault.objects.all()
     title = 'Usterki'
@@ -80,6 +87,7 @@ def fault_list(request):
                   context={'title': title,
                            'faults': faults})
 
+@login_required()
 def inspection_list(request):
     inspections = Inspection.objects.all()
     title = 'Przeglądy'
@@ -88,6 +96,7 @@ def inspection_list(request):
                   context={'title': title,
                            'inspections': inspections})
 
+@login_required()
 def inspection_detail(request, id):
     inspection = get_object_or_404(Inspection, id=id)
     title = 'Przegląd'
