@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
+from .forms import FilterComplaintsForm
+from django.db.models import Q
 
 
 def home(request):
@@ -27,13 +29,32 @@ def vehicle_detail(request, slug):
 
 def complaint_list(request):
     complaints_list = Complaint.objects.all()
-    paginator = Paginator(complaints_list, 10)
     page = request.GET.get('page')
+    form = FilterComplaintsForm(request.GET)
+    if form.is_valid():
+        cd = form.cleaned_data
+        if cd['status']:
+            complaints_list = complaints_list.filter(status=cd['status'])
+        if cd['vehicle']:
+            complaints_list = complaints_list.filter(vehicle=cd['vehicle'])
+        if cd['date_from']:
+            complaints_list = complaints_list.filter(entry_date__gte=cd['date_from'])
+        if cd['date_to']:
+            complaints_list = complaints_list.filter(entry_date__lte=cd['date_to'])
+        paginator = Paginator(complaints_list, 10)
+        complaints = paginator.get_page(page)
+        return render(request,
+                      template_name='book/complaint/list.html',
+                      context={'title': 'Reklamacje',
+                               'complaints': complaints,
+                               'form': form})
+    paginator = Paginator(complaints_list, 10)
     complaints = paginator.get_page(page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
-                           'complaints': complaints})
+                           'complaints': complaints,
+                           'form': form})
 
 def complaint_detail(request, id):
     complaint = get_object_or_404(Complaint, id=id)
