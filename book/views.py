@@ -2,8 +2,10 @@ from django.shortcuts import render, get_object_or_404
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm
-from django.contrib.auth import authenticate, login, logout
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+
+import xlwt
 
 
 @login_required()
@@ -104,3 +106,113 @@ def inspection_detail(request, id):
                   template_name='book/inspection/detail.html',
                   context={'title': title,
                            'inspection': inspection})
+
+@login_required()
+def export_complaints_xls(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename=reklamacje.xls'
+
+    def count_height(text):
+        if len(text) > 25:
+            lines = int(len(text) / 25) + 1
+            return lines
+        return 1
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Reklamcje')
+
+    # Custom colors
+
+    xlwt.add_palette_colour("light_green", 0x21)
+    wb.set_colour_RGB(0x21, 184, 209, 175)
+    xlwt.add_palette_colour("light_gray", 0x22)
+    wb.set_colour_RGB(0x22, 227, 229, 229)
+
+    # Sheet heade, first row
+    row_num = 0
+
+    font_style = xlwt.easyxf('align: vert centre, horiz centre, wrap on; font: bold on; borders: left thin, '
+                             'right thin, top thin, bottom thin; pattern: pattern solid, fore_colour '
+                                    'light_gray;')
+
+    columns = ['Nr dokumentu', 'Pojazd', 'Data wejścia reklamacje', 'Data usunięcia reklamacji',
+               'Status', 'Nr ZR', 'Usterka', 'Podjęte działania', 'Uwagi', 'Potrzeby']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # columns with
+    ws.col(0).width = 256 * 25
+    ws.col(1).width = 256 * 15
+    ws.col(2).width = 256 * 15
+    ws.col(3).width = 256 * 15
+    ws.col(4).width = 256 * 15
+    ws.col(5).width = 256 * 10
+    ws.col(6).width = 256 * 40
+    ws.col(7).width = 256 * 30
+    ws.col(8).width = 256 * 30
+    ws.col(9).width = 256 * 30
+
+    ws.row(0).height = 256 * 3
+
+    rows = Complaint.objects.all()
+
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(columns)):
+            if row.status == 'open':
+                style = xlwt.easyxf('align: vert centre, horiz centre, wrap yes; borders: left thin, right thin, '
+                                    'top thin, bottom thin;')
+            else:
+                style = xlwt.easyxf('align: vert centre, horiz centre, wrap yes; pattern: pattern solid, fore_colour '
+                                    'light_green; borders: left thin, right thin, top thin, bottom thin;')
+            if col_num == 0:
+                ws.write(row_num, col_num, row.document_number, style)
+            if col_num == 1:
+                ws.write(row_num, col_num, row.vehicle.get_full_name(), style)
+            if col_num == 2:
+                date = '-'.join((str(row.entry_date.day), str(row.entry_date.month), str(row.entry_date.year)))
+                ws.write(row_num, col_num, date, style)
+            if col_num == 3:
+                if row.end_date:
+                    date = '-'.join((str(row.end_date.day), str(row.end_date.month), str(row.end_date.year)))
+                else:
+                    date = ''
+                ws.write(row_num, col_num, date, style)
+            if col_num == 4:
+                ws.write(row_num, col_num, row.status, style)
+            if col_num == 5:
+                faults = ''
+                for i, fault in enumerate(row.complaint_faults.all()):
+                    if fault.zr_number:
+                        faults += '{}.{}\n'.format(i+1, fault.zr_number)
+                ws.write(row_num, col_num, faults, style)
+            if col_num == 6:
+                faults = ''
+                for i, fault in enumerate(row.complaint_faults.all()):
+                    faults += '{}.{} - {}\n'.format(i+1, fault.description, fault.status)
+                ws.row(row_num).height = 256 * count_height(faults)
+                ws.write(row_num, col_num, faults, style)
+            if col_num == 7:
+                faults = ''
+                for i, fault in enumerate(row.complaint_faults.all()):
+                    if fault.actions:
+                        faults += '{}.{}'.format(i + 1, fault.actions)
+                ws.write(row_num, col_num, faults, style)
+            if col_num == 8:
+                faults = ''
+                for i, fault in enumerate(row.complaint_faults.all()):
+                    if fault.comments:
+                        faults += '{}.{}'.format(i + 1, fault.comments)
+                ws.write(row_num, col_num, faults, style)
+            if col_num == 9:
+                faults = ''
+                for i, fault in enumerate(row.complaint_faults.all()):
+                    if fault.need:
+                        faults += '{}.{}'.format(i + 1, fault.need)
+                ws.write(row_num, col_num, faults, style)
+    ws.set_panes_frozen(True)
+    ws.set_horz_split_pos(1)
+    # ws.set_vert_split_pos(1)
+    wb.save(response)
+    return response
