@@ -3,6 +3,7 @@ from django.urls import reverse
 from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault, create_inspection
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
+from .forms import FilterComplaintsForm
 
 import datetime
 
@@ -29,7 +30,7 @@ class VehicleListViewTestCase(TestCase):
         create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
 
     def test_vehicle_list_view(self):
-        owner = Owner.objects.get(id=1)
+        owner = Owner.objects.get(name='Koleje Dolnośląskie')
         response = self.client.get(reverse('book:vehicle_list', args=['koleje-dolnośląskie']))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/vehicle/list.html')
@@ -82,7 +83,8 @@ class ComplaintListViewTestCase(TestCase):
         vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
         create_complaint(vehicle, owner, doc_number='reklamacja 32', entry_date=datetime.date(2019, 1, 1))
         create_complaint(vehicle, owner, doc_number='reklamacja 33', entry_date=datetime.date(2019, 1, 3))
-        create_complaint(vehicle, owner, doc_number='reklamacja 34', entry_date=datetime.date(2019, 1, 12))
+        create_complaint(vehicle, owner, doc_number='reklamacja 34', entry_date=datetime.date(2019, 1, 12),
+                         status='close')
 
     def test_complaint_list_view(self):
         complaints = Complaint.objects.all()
@@ -96,6 +98,27 @@ class ComplaintListViewTestCase(TestCase):
         self.assertEqual(len(response.context['complaints']), 3)
         self.assertContains(response, 'reklamacja 33')
 
+    def test_valid_form(self):
+        vehicle = Vehicle.objects.first()
+        form = FilterComplaintsForm(data={'status': 'open',
+                                          'vehicle': vehicle.id})
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_form(self):
+        form = FilterComplaintsForm(data={'status': 'op'})
+        self.assertFalse(form.is_valid())
+
+    def test_serch_by_status(self):
+        response = self.client.get('/complaint/?status=open&vehicle=')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['complaints']), 2)
+
+    def test_search_by_date(self):
+        response = self.client.get('/complaint/?status=&vehicle=&date_from=2019-1-1&date_to=2019-1-3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['complaints']), 2)
+
+
 class FaultDetailViewTestCase(TestCase):
 
     def setUp(self):
@@ -107,7 +130,7 @@ class FaultDetailViewTestCase(TestCase):
         create_fault(complaint, vehicle, name='usterka silnika', zr_number='234')
 
     def test_fault_detail_view(self):
-        fault = Fault.objects.get(id=1)
+        fault = Fault.objects.get(name='usterka drzwi')
         response = self.client.get(reverse('book:fault_detail', args=[fault.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault/detail.html')
@@ -185,4 +208,4 @@ class InspectionDetailViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'book/inspection/detail.html')
         self.assertEqual(response.context['title'], 'Przegląd')
         self.assertEqual(response.context['inspection'], inspection)
-        self.assertContains(response, 'P2.1')
+        self.assertContains(response, 'P1.1')

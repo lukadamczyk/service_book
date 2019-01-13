@@ -25,7 +25,7 @@ admin.site.register(Complaint, ComplaintAdmin)
 
 class FaultAdmin(admin.ModelAdmin):
     list_display = ('name','zr_number', 'status', 'vehicle', 'description', 'actions', 'complaint',
-                    'entry_date', 'moved_date', 'end_date', 'need', 'comments')
+                    'entry_date', 'end_date', 'need', 'comments')
     list_filter = ('vehicle', 'status')
 
 admin.site.register(Fault, FaultAdmin)

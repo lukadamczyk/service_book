@@ -203,8 +203,6 @@ class Fault(models.Model):
     status = models.CharField(max_length=10,
                               choices=status_choices)
     entry_date = models.DateField()
-    moved_date = models.DateField(blank=True,
-                                  null=True)
     end_date = models.DateField(blank=True,
                                 null=True)
     need = models.TextField(blank=True)
