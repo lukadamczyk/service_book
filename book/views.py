@@ -73,6 +73,7 @@ def complaint_detail(request, id):
                   context={'title': title,
                            'complaint': complaint})
 
+@login_required()
 def fault_detail(request, id):
     fault = get_object_or_404(Fault, id=id)
     title = fault.vehicle.get_full_name()
@@ -95,6 +96,7 @@ def add_complaint(request):
                    context={'title': 'Reklamacje',
                             'form': form})
 
+@login_required()
 def fault_list(request):
     faults_list = Fault.objects.all()
     page = request.GET.get('page')
