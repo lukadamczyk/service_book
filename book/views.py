@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
-from .forms import FilterComplaintsForm, FilterFaultForm
+from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
@@ -82,6 +82,19 @@ def fault_detail(request, id):
                            'fault': fault})
 
 @login_required()
+def add_complaint(request):
+    if request.method == 'POST':
+        form = AddComplaintForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('book:complaint_list'))
+    else:
+        form = AddComplaintForm()
+    return render(request,
+                   template_name='book/complaint/add.html',
+                   context={'title': 'Reklamacje',
+                            'form': form})
+
 def fault_list(request):
     faults_list = Fault.objects.all()
     page = request.GET.get('page')
