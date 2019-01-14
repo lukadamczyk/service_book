@@ -83,12 +83,33 @@ def fault_detail(request, id):
 
 @login_required()
 def fault_list(request):
-    faults = Fault.objects.all()
-    title = 'Usterki'
+    faults_list = Fault.objects.all()
+    page = request.GET.get('page')
+    form = FilterFaultForm(request.GET)
+    if form.is_valid():
+        cd = form.cleaned_data
+        if cd['status']:
+            faults_list = faults_list.filter(status=cd['status'])
+        if cd['vehicle']:
+            faults_list = faults_list.filter(vehicle=cd['vehicle'])
+        if cd['zr_number']:
+            faults_list = faults_list.filter(zr_number=cd['zr_number'])
+        if cd['date_from']:
+            faults_list = faults_list.filter(entry_date__gte=cd['date_from'])
+        if cd['date_to']:
+            faults_list = faults_list.filter(entry_date__lte=cd['date_to'])
+        faults = paginator_get_page(faults_list, 10, page)
+        return render(request,
+                      template_name='book/fault/list.html',
+                      context={'title': 'Usterki',
+                               'faults': faults,
+                               'form': form})
+    faults = paginator_get_page(faults_list, 10, page)
     return render(request,
                   template_name='book/fault/list.html',
-                  context={'title': title,
-                           'faults': faults})
+                  context={'title': 'Usterki',
+                           'faults': faults,
+                           'form': form})
 
 @login_required()
 def inspection_list(request):
