@@ -3,7 +3,7 @@ from django.urls import reverse
 from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault, create_inspection
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
-from .forms import FilterComplaintsForm
+from .forms import FilterComplaintsForm, FilterFaultForm
 
 
 import datetime
@@ -183,7 +183,7 @@ class FaultListViewTestCase(TestCase):
         complaint1 = create_complaint(vehicle1, owner, doc_number='reklamacja 32')
         complaint2 = create_complaint(vehicle2, owner, doc_number='reklamacja 32')
         complaint3 = create_complaint(vehicle3, owner, doc_number='reklamacja 32')
-        create_fault(complaint1, vehicle1, name='usterka drzwi', entry_date=datetime.date(2019,1,2))
+        create_fault(complaint1, vehicle1, name='usterka drzwi', entry_date=datetime.date(2019,1,2), status='close')
         create_fault(complaint2, vehicle2, name='usterka WC', zr_number='234', entry_date=datetime.date(2019,1,1))
         create_fault(complaint3, vehicle3, name='usterka silnika', zr_number='214', entry_date=datetime.date(2019,1,10))
         User.objects.create_user('Tom',
@@ -201,6 +201,26 @@ class FaultListViewTestCase(TestCase):
                                                       '<Fault: usterka drzwi>',
                                                       '<Fault: usterka silnika>'])
         self.assertContains(response, 'usterka drzwi')
+
+    def test_valid_form(self):
+        form_blank = FilterFaultForm(data={})
+        form_data = FilterFaultForm(data={'status': 'open'})
+        self.assertTrue(form_blank.is_valid())
+        self.assertTrue(form_data.is_valid())
+
+    def test_invalid_form(self):
+        form_data = FilterFaultForm(data={'status': 'test'})
+        self.assertFalse(form_data.is_valid())
+
+    def test_serch_by_status(self):
+        response = self.client.get('/fault/?status=open&vehicle=')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['faults']), 2)
+
+    def test_search_by_date(self):
+        response = self.client.get('/fault/?status=&vehicle=&date_from=2019-1-1&date_to=2019-1-3')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['faults']), 2)
 
 
 class InspectionListViewTestCase(TestCase):
