@@ -51,15 +51,13 @@ def complaint_list(request):
             complaints_list = complaints_list.filter(entry_date__gte=cd['date_from'])
         if cd['date_to']:
             complaints_list = complaints_list.filter(entry_date__lte=cd['date_to'])
-        paginator = Paginator(complaints_list, 10)
-        complaints = paginator.get_page(page)
+        complaints = paginator_get_page(complaints_list, 10, page)
         return render(request,
                       template_name='book/complaint/list.html',
                       context={'title': 'Reklamacje',
                                'complaints': complaints,
                                'form': form})
-    paginator = Paginator(complaints_list, 10)
-    complaints = paginator.get_page(page)
+    complaints = paginator_get_page(complaints_list, 10, page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
