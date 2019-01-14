@@ -1,5 +1,5 @@
 from django import forms
-from .models import Complaint
+from .models import Complaint, Fault
 
 
 class FilterComplaintsForm(forms.ModelForm):
@@ -19,3 +19,17 @@ class FilterComplaintsForm(forms.ModelForm):
         model = Complaint
         fields = ['status', 'vehicle', 'date_from', 'date_to']
 
+
+class FilterFaultForm(forms.ModelForm):
+
+    date_from = forms.DateField(required=False)
+    date_to = forms.DateField(required=False)
+
+    def __init__(self, *args, **kwargs):
+        super(FilterFaultForm, self).__init__(*args, **kwargs)
+        self.fields['status'].required = False
+        self.fields['vehicle'].required = False
+
+    class Meta:
+        model = Fault
+        fields = ['status', 'vehicle', 'zr_number', 'date_from', 'date_to']

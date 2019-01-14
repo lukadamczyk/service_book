@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container">
   {% if faults %}
+  <form action="." method="GET" class="form-inline">
+    <!-- {% csrf_token %} -->
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+  </form>
   <table class="table">
     <thead>
       <tr>
@@ -12,12 +17,8 @@
         <th scope="col" class="align-middle text-center">Pojazd</th>
         <th scope="col" class="align-middle text-center">Data wejścia usterki</th>
         <th scope="col" class="align-middle text-center">Data usunięcia Usterki</th>
-        <th scope="col" class="align-middle text-center">Przesunięto do</th>
         <th scope="col" class="align-middle text-center">Opis</th>
         <th scope="col" class="align-middle text-center">Podjęte działania</th>
-        <th scope="col" class="align-middle text-center">Uwagi</th>
-        <th scope="col" class="align-middle text-center">Potrzeby</th>
-        <th scope="col" class="align-middle text-center">Części</th>
       </tr>
     </thead>
     <tbody>
@@ -25,22 +26,12 @@
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter }}</th>
         <td><a href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
-        <td>{{ fault.zr_number }}</td>
+        <td>{{ fault.zr_number|default:"" }}</td>
         <td>{{ fault.vehicle.get_full_name }}</td>
         <td>{{ fault.entry_date|date:"d-m-Y" }}</td>
         <td>{{ fault.end_date|date:"d-m-Y" }}</td>
-        <td>{{ fault.moved_date }}</td>
         <td>{{ fault.description }}</td>
         <td>{{ fault.actions }}</td>
-        <td>{{ fault.comments }}</td>
-        <td>{{ fault.need }}</td>
-        <td>
-          <ul>
-            {% for part in fault.parts.all %}
-              <li>{{ forloop.counter }}. {{ part.name }}</li>
-            {% endfor %}
-          </ul>
-        </td>
       </tr>
     </tbody>
     {% endfor %}
