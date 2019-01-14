@@ -1,12 +1,15 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
-from .forms import FilterComplaintsForm
+from .forms import FilterComplaintsForm, FilterFaultForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
 import xlwt
 
+def paginator_get_page(models_list, num, page):
+    paginator = Paginator(models_list, num)
+    return paginator.get_page(page)
 
 @login_required()
 def home(request):
