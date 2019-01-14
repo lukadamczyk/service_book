@@ -33,3 +33,10 @@ class FilterFaultForm(forms.ModelForm):
     class Meta:
         model = Fault
         fields = ['status', 'vehicle', 'zr_number', 'date_from', 'date_to']
+
+
+class AddComplaintForm(forms.ModelForm):
+
+    class Meta:
+        model = Complaint
+        fields = '__all__'
