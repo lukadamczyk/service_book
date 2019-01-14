@@ -3,6 +3,11 @@
 {% block content %}
 <div class="container">
   {% if faults %}
+  <form action="." method="GET" class="form-inline">
+    <!-- {% csrf_token %} -->
+    {{ form.as_p }}
+    <input type="submit" value="Submit">
+  </form>
   <table class="table">
     <thead>
       <tr>
