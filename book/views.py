@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
-from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm
+from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.forms import formset_factory
 
 import xlwt
 
@@ -41,6 +42,7 @@ def complaint_list(request):
     complaints_list = Complaint.objects.all()
     page = request.GET.get('page')
     form = FilterComplaintsForm(request.GET)
+    form_add_complaint = NumberOfFaults()
     if form.is_valid():
         cd = form.cleaned_data
         if cd['status']:
@@ -56,13 +58,15 @@ def complaint_list(request):
                       template_name='book/complaint/list.html',
                       context={'title': 'Reklamacje',
                                'complaints': complaints,
-                               'form': form})
+                               'form': form,
+                               'form_add_complaint': form_add_complaint})
     complaints = paginator_get_page(complaints_list, 10, page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
                            'complaints': complaints,
-                           'form': form})
+                           'form': form,
+                           'form_add_complaint': form_add_complaint})
 
 @login_required()
 def complaint_detail(request, id):
