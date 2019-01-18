@@ -8,7 +8,11 @@
     {{ form.as_p }}
     <input type="submit" value="Submit">
   </form>
-  <span><a href="{% url 'book:add_complaint' %}">Dodaj</a></span>
+  <form action="{% url 'book:add_complaint' %}" method="GET" class="form-inline">
+    <!-- {% csrf_token %} -->
+    {{ form_add_complaint.as_p }}
+    <input type="submit" value="Dodaj reklamację">
+  </form>
   <table class="table">
     <thead>
       <tr>
