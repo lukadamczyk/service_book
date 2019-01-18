@@ -84,17 +84,34 @@ def fault_detail(request, id):
 
 @login_required()
 def add_complaint(request):
+    number_of_faults = int(request.GET.get('number'))
+    AddFaultFormSet = formset_factory(AddFaultForm,
+                                      extra=number_of_faults,
+                                      max_num=number_of_faults,
+                                      validate_min=True)
     if request.method == 'POST':
-        form = AddComplaintForm(request.POST)
-        if form.is_valid():
-            form.save()
-        return redirect(reverse('book:complaint_list'))
+        form_complaint = AddComplaintForm(request.POST)
+        formset_fault = AddFaultFormSet(request.POST)
+        if form_complaint.is_valid() and formset_fault.is_valid():
+            complaint =form_complaint.save(commit=False)
+            complaint.client = complaint.vehicle.owner
+            complaint.save()
+            for form in formset_fault:
+                fault = form.save(commit=False)
+                fault.complaint = complaint
+                fault.vehicle = complaint.vehicle
+                fault.entry_date = complaint.entry_date
+                fault.save()
+
+            return redirect(reverse('book:complaint_list'))
     else:
-        form = AddComplaintForm()
+        form_complaint = AddComplaintForm()
+        formset_fault = AddFaultFormSet()
     return render(request,
                    template_name='book/complaint/add.html',
                    context={'title': 'Reklamacje',
-                            'form': form})
+                            'form_complaint': form_complaint,
+                            'formset_fault': formset_fault})
 
 @login_required()
 def fault_list(request):
