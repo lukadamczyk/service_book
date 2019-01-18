@@ -39,4 +39,13 @@ class AddComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        fields = '__all__'
+        exclude = ['client']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        end_date = cleaned_data.get('end_date')
+
+        if status == 'close' and end_date is None:
+            raise forms.ValidationError('You have to fill out the field end_date')
+
