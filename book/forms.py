@@ -49,3 +49,21 @@ class AddComplaintForm(forms.ModelForm):
         if status == 'close' and end_date is None:
             raise forms.ValidationError('You have to fill out the field end_date')
 
+
+class AddFaultForm(forms.ModelForm):
+
+    class Meta:
+        model = Fault
+        exclude = ['complaint', 'vehicle', 'entry_date']
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        end_date = cleaned_data.get('end_date')
+        # import pdb;
+        # pdb.set_trace()
+
+        if status == 'close' and end_date is None:
+            raise forms.ValidationError('You have to fill out the field end_date')
+
+
