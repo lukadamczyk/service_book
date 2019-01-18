@@ -276,3 +276,97 @@ class InspectionDetailViewTestCase(TestCase):
         self.assertEqual(response.context['inspection'], inspection)
         self.assertContains(response, 'P1.1')
 
+
+class AddComplaintView(TestCase):
+
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        client = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        create_vehicle(trolleys, client, slug='SA132-001', number='001', vehicle_type='SA132')
+
+    def test_valid_add_complaint(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        data = {'document_number': 'KW1234',
+                'entry_date': datetime.date(2019, 1, 1),
+                'status': 'open',
+                'vehicle': vehicle.id,
+                'form-TOTAL_FORMS': 1,
+                'form-INITIAL_FORMS': 0,
+                'form-MIN_NUM_FORMS': 0,
+                'form-MAX_NUM_FORMS': 1000,
+                'form-0-name': 'usterka drzwi',
+                'form-0-category': 'poszycie',
+                'form-0-zr_number': '1234',
+                'form-0-status': 'open',
+                'form-0-description': 'uszkodzony sterownik drzwi'}
+        response = self.client.post('/complaint/add/?number=1',
+                                    data=data,
+                                    follow=True)
+        # import pdb;
+        # pdb.set_trace()
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/list.html')
+        complaint = Complaint.objects.get(document_number='KW1234')
+        self.assertEqual(complaint.entry_date, datetime.date(2019, 1, 1))
+        self.assertEqual(len(complaint.complaint_faults.all()), 1)
+        fault = Fault.objects.get(complaint=complaint)
+        self.assertEqual(fault.zr_number, '1234')
+        self.assertEqual(fault.entry_date, complaint.entry_date)
+
+    def test_invaild_add_complaint_close_without_end_date(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        data = {'document_number': 'KW123',
+                'entry_date': datetime.date(2019, 1, 1),
+                'status': 'close',
+                'vehicle': vehicle.id,
+                'form-TOTAL_FORMS': 1,
+                'form-INITIAL_FORMS': 0,
+                'form-MIN_NUM_FORMS': 0,
+                'form-MAX_NUM_FORMS': 1000,
+                'form-0-name': 'usterka drzwi',
+                'form-0-category': 'poszycie',
+                'form-0-zr_number': '123',
+                'form-0-status': 'open',
+                'form-0-description': 'uszkodzony sterownik drzwi'}
+        response = self.client.post('/complaint/add/?number=1',
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/add.html')
+        complaints = Complaint.objects.all()
+        self.assertEqual(len(complaints), 0)
+        self.assertContains(response, 'You have to fill out the field end_date')
+
+    def test_invaild_add_fault_close_without_end_date(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        data = {'document_number': 'KW123',
+                'entry_date': datetime.date(2019, 1, 1),
+                'status': 'open',
+                'vehicle': vehicle.id,
+                'form-TOTAL_FORMS': 1,
+                'form-INITIAL_FORMS': 0,
+                'form-MIN_NUM_FORMS': 0,
+                'form-MAX_NUM_FORMS': 1000,
+                'form-0-name': 'usterka drzwi',
+                'form-0-category': 'poszycie',
+                'form-0-zr_number': '123',
+                'form-0-status': 'close',
+                'form-0-description': 'uszkodzony sterownik drzwi'}
+        response = self.client.post('/complaint/add/?number=1',
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/add.html')
+        complaints = Complaint.objects.all()
+        self.assertEqual(len(complaints), 0)
+        self.assertContains(response, 'You have to fill out the field end_date')
+
+
