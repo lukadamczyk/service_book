@@ -4,9 +4,15 @@
 <div class="container">
   <div class="row">
     <h3>Dodaj reklamację</h3>
-    <form action="." method="POST" class="form-inline">
+    <form action="/complaint/add/?number={{ request.GET.number }}" method="POST" class="form-inline">
       {% csrf_token %}
-      {{ form.as_p }}
+      <div class="row">
+        {{ form_complaint.as_p }}
+      </div>
+      <div class="row">
+        <h4>Usterki</h4><br>
+        {{ formset_fault.as_p }}
+      </div>
       <input type="submit" value="Submit">
     </form>
   </div>
