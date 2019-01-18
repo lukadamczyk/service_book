@@ -67,3 +67,6 @@ class AddFaultForm(forms.ModelForm):
             raise forms.ValidationError('You have to fill out the field end_date')
 
 
+class NumberOfFaults(forms.Form):
+    number = forms.IntegerField(required=True,
+                                label='Liczba usterek')
