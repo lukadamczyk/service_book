@@ -11,6 +11,7 @@ urlpatterns = [
     path('fault/<int:id>/', views.fault_detail, name='fault_detail'),
     path('complaint/add/', views.add_complaint, name='add_complaint'),
     path('fault/', views.fault_list, name='fault_list'),
+    path('fault/edit/<int:id>/', views.edit_fault, name='edit_fault'),
     path('inspection/', views.inspection_list, name='inspection_list'),
     path('inspection/<int:id>/', views.inspection_detail, name='inspection_detail'),
     path('export/', views.export_complaints_xls, name='export_complaints_xls'),
