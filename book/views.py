@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
-from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults
+from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, EditFaultForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
@@ -145,6 +145,23 @@ def fault_list(request):
                   template_name='book/fault/list.html',
                   context={'title': 'Usterki',
                            'faults': faults,
+                           'form': form})
+
+@login_required()
+def edit_fault(request, id):
+    fault = get_object_or_404(Fault, id=id)
+    if request.method == 'POST':
+        form = EditFaultForm(instance=fault,
+                             data=request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('book:fault_list'))
+    else:
+        form = EditFaultForm(instance=fault)
+    return render(request,
+                  template_name='book/fault/edit.html',
+                  context={'title': 'Usterka',
+                           'fault': fault,
                            'form': form})
 
 @login_required()
