@@ -8,6 +8,7 @@ urlpatterns = [
     path('vehicle/<slug>/', views.vehicle_detail, name='vehicle_detail'),
     path('complaint/', views.complaint_list, name='complaint_list'),
     path('complaint/<int:id>/', views.complaint_detail, name='complaint_detail'),
+    path('complaint/edit/<int:id>/', views.edit_complaint, name='edit_complaint'),
     path('fault/<int:id>/', views.fault_detail, name='fault_detail'),
     path('complaint/add/', views.add_complaint, name='add_complaint'),
     path('fault/', views.fault_list, name='fault_list'),
