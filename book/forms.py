@@ -1,11 +1,14 @@
 from django import forms
 from .models import Complaint, Fault
+from bootstrap_datepicker_plus import DatePickerInput
 
 
 class FilterComplaintsForm(forms.ModelForm):
 
-    date_from = forms.DateField(required=False)
-    date_to = forms.DateField(required=False)
+    date_from = forms.DateField(required=False,
+                                widget=DatePickerInput(format='MM/DD/YYYY'))
+    date_to = forms.DateField(required=False,
+                              widget=DatePickerInput(format='MM/DD/YYYY'))
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
@@ -40,6 +43,10 @@ class AddComplaintForm(forms.ModelForm):
     class Meta:
         model = Complaint
         exclude = ['client']
+        widgets = {
+            'entry_date': DatePickerInput(format='MM/DD/YYYY'),
+            'end_date': DatePickerInput(format='MM/DD/YYYY'),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -55,6 +62,9 @@ class AddFaultForm(forms.ModelForm):
     class Meta:
         model = Fault
         exclude = ['complaint', 'vehicle', 'entry_date']
+        widgets = {
+            'end_date': DatePickerInput(format='MM/DD/YYYY'),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
