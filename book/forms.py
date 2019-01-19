@@ -95,3 +95,19 @@ class EditFaultForm(forms.ModelForm):
     class Meta:
         model = Fault
         exclude = ['complaint', 'vehicle', 'entry_date']
+
+
+class EditComplaintForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EditComplaintForm, self).__init__(*args, **kwargs)
+        self.fields['document_number'].required = False
+        self.fields['entry_date'].required = False
+        self.fields['end_date'].required = False
+        self.fields['status'].required = False
+        self.fields['tasks'].required = False
+        self.fields['vehicle'].required = False
+
+    class Meta:
+        model = Complaint
+        exclude = ['client']
