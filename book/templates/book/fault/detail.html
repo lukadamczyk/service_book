@@ -7,6 +7,7 @@
       Usterka: {{ fault.name }}<br>
       Nr ZR: {{ fault.zr_number }}<br>
       Status: {{ fault.status }}<br>
+      <a href="{% url 'book:edit_fault' fault.id %}">Edytuj</a>
     {% endif %}
   </div>
 </div>
