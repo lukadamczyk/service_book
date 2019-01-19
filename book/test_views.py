@@ -308,8 +308,6 @@ class AddComplaintView(TestCase):
         response = self.client.post('/complaint/add/?number=1',
                                     data=data,
                                     follow=True)
-        # import pdb;
-        # pdb.set_trace()
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/complaint/list.html')
         complaint = Complaint.objects.get(document_number='KW1234')
