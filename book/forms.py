@@ -80,3 +80,18 @@ class AddFaultForm(forms.ModelForm):
 class NumberOfFaults(forms.Form):
     number = forms.IntegerField(required=True,
                                 label='Liczba usterek')
+
+
+class EditFaultForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(EditFaultForm, self).__init__(*args, **kwargs)
+        self.fields['status'].required = False
+        self.fields['name'].required = False
+        self.fields['end_date'].required = False
+        self.fields['category'].required = False
+        self.fields['description'].required = False
+
+    class Meta:
+        model = Fault
+        exclude = ['complaint', 'vehicle', 'entry_date']
