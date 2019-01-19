@@ -20,6 +20,7 @@
         </div>
       {% endfor %}
     {% endif %}
+    <a href="{% url 'book:edit_complaint' complaint.id %}">Edytuj reklamację</a>
   </div>
 </div>
 {% endblock %}
