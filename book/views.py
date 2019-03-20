@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.core.paginator import Paginator
-from .forms import FilterComplaintsForm, FilterFaultForm
+from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, \
+    EditFaultForm, EditComplaintForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.forms import formset_factory
 
 import xlwt
 
@@ -41,6 +43,7 @@ def complaint_list(request):
     complaints_list = Complaint.objects.all()
     page = request.GET.get('page')
     form = FilterComplaintsForm(request.GET)
+    form_add_complaint = NumberOfFaults()
     if form.is_valid():
         cd = form.cleaned_data
         if cd['status']:
@@ -56,13 +59,15 @@ def complaint_list(request):
                       template_name='book/complaint/list.html',
                       context={'title': 'Reklamacje',
                                'complaints': complaints,
-                               'form': form})
+                               'form': form,
+                               'form_add_complaint': form_add_complaint})
     complaints = paginator_get_page(complaints_list, 10, page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
                            'complaints': complaints,
-                           'form': form})
+                           'form': form,
+                           'form_add_complaint': form_add_complaint})
 
 @login_required()
 def complaint_detail(request, id):
@@ -73,6 +78,7 @@ def complaint_detail(request, id):
                   context={'title': title,
                            'complaint': complaint})
 
+@login_required()
 def fault_detail(request, id):
     fault = get_object_or_404(Fault, id=id)
     title = fault.vehicle.get_full_name()
@@ -80,6 +86,37 @@ def fault_detail(request, id):
                   template_name='book/fault/detail.html',
                   context={'title': title,
                            'fault': fault})
+
+@login_required()
+def add_complaint(request):
+    number_of_faults = int(request.GET.get('number'))
+    AddFaultFormSet = formset_factory(AddFaultForm,
+                                      extra=number_of_faults,
+                                      max_num=number_of_faults,
+                                      validate_min=True)
+    if request.method == 'POST':
+        form_complaint = AddComplaintForm(request.POST)
+        formset_fault = AddFaultFormSet(request.POST)
+        if form_complaint.is_valid() and formset_fault.is_valid():
+            complaint =form_complaint.save(commit=False)
+            complaint.client = complaint.vehicle.owner
+            complaint.save()
+            for form in formset_fault:
+                fault = form.save(commit=False)
+                fault.complaint = complaint
+                fault.vehicle = complaint.vehicle
+                fault.entry_date = complaint.entry_date
+                fault.save()
+
+            return redirect(reverse('book:complaint_list'))
+    else:
+        form_complaint = AddComplaintForm()
+        formset_fault = AddFaultFormSet()
+    return render(request,
+                   template_name='book/complaint/add.html',
+                   context={'title': 'Reklamacje',
+                            'form_complaint': form_complaint,
+                            'formset_fault': formset_fault})
 
 @login_required()
 def fault_list(request):
@@ -109,6 +146,40 @@ def fault_list(request):
                   template_name='book/fault/list.html',
                   context={'title': 'Usterki',
                            'faults': faults,
+                           'form': form})
+
+@login_required()
+def edit_fault(request, id):
+    fault = get_object_or_404(Fault, id=id)
+    if request.method == 'POST':
+        form = EditFaultForm(instance=fault,
+                             data=request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('book:fault_list'))
+    else:
+        form = EditFaultForm(instance=fault)
+    return render(request,
+                  template_name='book/fault/edit.html',
+                  context={'title': 'Usterka',
+                           'fault': fault,
+                           'form': form})
+
+@login_required()
+def edit_complaint(request, id):
+    complaint = get_object_or_404(Complaint, id=id)
+    if request.method == 'POST':
+        form = EditComplaintForm(instance=complaint,
+                             data=request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect(reverse('book:complaint_list'))
+    else:
+        form = EditComplaintForm(instance=complaint)
+    return render(request,
+                  template_name='book/complaint/edit.html',
+                  context={'title': 'Usterka',
+                           'complaint': complaint,
                            'form': form})
 
 @login_required()
