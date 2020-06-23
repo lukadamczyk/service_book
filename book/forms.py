@@ -6,16 +6,21 @@ from bootstrap_datepicker_plus import DatePickerInput
 class FilterComplaintsForm(forms.ModelForm):
 
     date_from = forms.DateField(required=False,
-                                widget=DatePickerInput(format='MM/DD/YYYY'))
+                                widget=DatePickerInput(format='MM/DD/YYYY'),
+                                label='Od')
     date_to = forms.DateField(required=False,
-                              widget=DatePickerInput(format='MM/DD/YYYY'))
+                              widget=DatePickerInput(format='MM/DD/YYYY'),
+                              label='Do')
 
     def __init__(self, *args, **kwargs):
         # first call parent's constructor
         super(FilterComplaintsForm, self).__init__(*args, **kwargs)
         # there's a `fields` property now
         self.fields['status'].required = False
+        self.fields['status'].label = 'Stan'
         self.fields['vehicle'].required = False
+        self.fields['vehicle'].label = 'Pojazd'
+
 
 
     class Meta:
