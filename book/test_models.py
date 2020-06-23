@@ -97,6 +97,16 @@ class VehicleTestCase(TestCase):
         vehicle = Vehicle.objects.get(number='007')
         self.assertEqual(vehicle.get_full_name(), 'SA132-007')
 
+    def test_is_warrenty(self):
+        vehicle = Vehicle.objects.get(number='007')
+        vehicle.warranty = datetime.date(2020, 6, 15)
+        today = datetime.date(2020, 6, 14)
+        self.assertTrue(vehicle.is_warrenty(today))
+        today = datetime.date(2020, 6, 15)
+        self.assertTrue(vehicle.is_warrenty(today))
+        today = datetime.date(2020, 6, 16)
+        self.assertFalse(vehicle.is_warrenty(today))
+
 
 class InspectionTestCase(TestCase):
 
