@@ -2,6 +2,8 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 
+import datetime
+
 vehicle_choices = (
         ('SA132', 'SA132'),
         ('SA133', 'SA133'),
@@ -85,6 +87,16 @@ class Vehicle(models.Model):
 
     def get_full_name(self):
         return '{}-{}'.format(self.vehicle_type, self.number)
+
+    def is_warrenty(self, date=None):
+        if date:
+            today = date
+        else:
+            today = datetime.date.today()
+        if self.warranty >= today:
+            return True
+        else:
+            return False
 
     # def get_absolute_url(self):
     #     return reverse('book:vehicle_detail',
