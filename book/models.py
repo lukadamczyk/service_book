@@ -22,6 +22,11 @@ class Owner(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def create_image_path(self):
+        img_path = 'book/{}.jpeg'.format(self.name)
+        return img_path
+
 class Trolleys(models.Model):
     name = models.CharField(max_length=10,
                             unique=True)

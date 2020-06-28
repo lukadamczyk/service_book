@@ -1,17 +1,19 @@
 {% extends "book/base.html" %}
+
+{% load static %}
+
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <div class="container">
   <div class="row">
     {% if owners %}
     {% for owner in owners %}
-    <div class="col-sm-4">
-    <div class="card text-center" style="width: 18rem;">
-      <img class="card-img-top" src=".../100px180/" alt="Card image cap">
+    <div class="col-sm-4 pt-3">
+    <div class="card text-center" ">
       <div class="card-body">
-        <h5 class="card-title">{{ owner.name }}</h5>
         <p class="card-text"></p>
-        <a href="{% url 'book:vehicle_list' owner.slug %}" class="btn btn-primary">Go somewhere</a>
+        <a href="{% url 'book:vehicle_list' owner.slug %}"><img class="card-img-top" src="{% static owner.create_image_path %}" alt="Card image cap"></a>
+        <h4 class="card-title mt-md-5">{{ owner.name }}</h4>
       </div>
     </div>
     </div>
