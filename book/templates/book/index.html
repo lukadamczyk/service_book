@@ -1,4 +1,7 @@
 {% extends "book/base.html" %}
+
+{% load static %}
+
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
 <div class="container">
@@ -6,8 +9,8 @@
     {% if owners %}
     {% for owner in owners %}
     <div class="col-sm-4">
-    <div class="card text-center" style="width: 18rem;">
-      <img class="card-img-top" src=".../100px180/" alt="Card image cap">
+    <div class="card text-center" style="width: 18rem height: 35rem;">
+      <img class="card-img-top" src="{% static owner.create_image_path %}" alt="Card image cap">
       <div class="card-body">
         <h5 class="card-title">{{ owner.name }}</h5>
         <p class="card-text"></p>
