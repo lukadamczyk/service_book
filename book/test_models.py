@@ -182,6 +182,7 @@ class OwnerTestCase(TestCase):
         owner = Owner.objects.first()
         self.assertTrue(isinstance(owner, Owner))
         self.assertEqual(owner.name, 'KW')
+        self.assertEqual(owner.create_image_path(), 'KW.jpg')
 
 
 class TrolleysTestCase(TestCase):
