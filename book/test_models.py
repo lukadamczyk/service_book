@@ -133,7 +133,6 @@ class ComplaintTestCase(TestCase):
         create_complaint(vehicle=vehicle, client=owner)
 
     def test_complaint_model(self):
-        vehicle = Vehicle.objects.get(id=1)
         complaint = Complaint.objects.get(id=1)
         self.assertTrue(isinstance(complaint, Complaint))
         self.assertEqual(complaint.end_date, None)
