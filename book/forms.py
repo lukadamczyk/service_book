@@ -56,15 +56,14 @@ class AddComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        exclude = ['client', 'tasks']
+        exclude = ['client', 'tasks', 'end_date']
         widgets = {
             'entry_date': DatePickerInput(format='MM/DD/YYYY'),
             'end_date': DatePickerInput(format='MM/DD/YYYY'),
         }
         labels = {
             'document_number': 'Nr reklamacji',
-            'entry_date': 'Od',
-            'end_date': 'Do',
+            'entry_date': 'Data rozpoczęcia',
             'status': 'Status',
             'vehicle': 'Pojazd'
         }
