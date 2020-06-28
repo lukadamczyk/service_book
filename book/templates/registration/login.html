@@ -1,12 +1,14 @@
 {% extends 'book/base.html' %}
 
-{% block title %}Login{% endblock %}
+{% load crispy_forms_tags %}
 
+{% block title %}Logowanie{% endblock %}
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
+    <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+      <div class="col-md-3 offset-md-3">
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Zaloguj</button>
+      </div>
+    </form>
 {% endblock %}
