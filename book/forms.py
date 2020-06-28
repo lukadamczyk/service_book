@@ -1,6 +1,7 @@
 from django import forms
 from .models import Complaint, Fault
 from bootstrap_datepicker_plus import DatePickerInput
+import datetime
 
 
 class FilterComplaintsForm(forms.ModelForm):
@@ -72,9 +73,15 @@ class AddComplaintForm(forms.ModelForm):
         cleaned_data = super().clean()
         status = cleaned_data.get('status')
         end_date = cleaned_data.get('end_date')
+        entry_date = cleaned_data.get('entry_date')
 
         if status == 'close' and end_date is None:
             raise forms.ValidationError('Podaj datę zakończenia')
+        if entry_date:
+            today = datetime.date.today()
+            if entry_date > today:
+                raise forms.ValidationError('Podaj właściwą datę rozpoczęcia reklamacji, nie może być pózniejsza niż '
+                                            '{}'.format(datetime.date.today()))
 
 
 class AddFaultForm(forms.ModelForm):
