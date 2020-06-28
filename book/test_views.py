@@ -340,7 +340,7 @@ class AddComplaintView(TestCase):
         self.assertTemplateUsed(response, 'book/complaint/add.html')
         complaints = Complaint.objects.all()
         self.assertEqual(len(complaints), 0)
-        self.assertContains(response, 'You have to fill out the field end_date')
+        self.assertContains(response, 'Podaj datę zakończenia')
 
     def test_invaild_add_fault_close_without_end_date(self):
         client = Owner.objects.first()
@@ -365,6 +365,6 @@ class AddComplaintView(TestCase):
         self.assertTemplateUsed(response, 'book/complaint/add.html')
         complaints = Complaint.objects.all()
         self.assertEqual(len(complaints), 0)
-        self.assertContains(response, 'You have to fill out the field end_date')
+        self.assertContains(response, 'Podaj datę zakończenia')
 
 

@@ -75,7 +75,7 @@ class AddComplaintForm(forms.ModelForm):
         end_date = cleaned_data.get('end_date')
 
         if status == 'close' and end_date is None:
-            raise forms.ValidationError('You have to fill out the field end_date')
+            raise forms.ValidationError('Podaj datę zakończenia')
 
 
 class AddFaultForm(forms.ModelForm):
@@ -105,7 +105,7 @@ class AddFaultForm(forms.ModelForm):
         # pdb.set_trace()
 
         if status == 'close' and end_date is None:
-            raise forms.ValidationError('You have to fill out the field end_date')
+            raise forms.ValidationError('Podaj datę zakończenia')
 
 
 class NumberOfFaults(forms.Form):
