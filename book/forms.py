@@ -30,8 +30,12 @@ class FilterComplaintsForm(forms.ModelForm):
 
 class FilterFaultForm(forms.ModelForm):
 
-    date_from = forms.DateField(required=False)
-    date_to = forms.DateField(required=False)
+    date_from = forms.DateField(required=False,
+                                widget=DatePickerInput(format='MM/DD/YYYY'),
+                                label='Od')
+    date_to = forms.DateField(required=False,
+                              widget=DatePickerInput(format='MM/DD/YYYY'),
+                              label='Do')
 
     def __init__(self, *args, **kwargs):
         super(FilterFaultForm, self).__init__(*args, **kwargs)
