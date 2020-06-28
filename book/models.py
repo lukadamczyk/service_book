@@ -139,8 +139,8 @@ class Inspection(models.Model):
 
 class Complaint(models.Model):
     status_choices = (
-        ('open', 'Open'),
-        ('close', 'Close')
+        ('open', 'Otwarta'),
+        ('close', 'Zamknięta')
     )
     document_number = models.CharField(max_length=50,
                                        unique=True)
@@ -169,8 +169,8 @@ class Complaint(models.Model):
 
 class Fault(models.Model):
     status_choices = (
-        ('open', 'Open'),
-        ('close', 'Close')
+        ('open', 'Otwarta'),
+        ('close', 'Zamknięta')
     )
     category_choices = (
         ('pudło', (

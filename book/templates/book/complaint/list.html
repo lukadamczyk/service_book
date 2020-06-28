@@ -12,7 +12,7 @@
 <div class="container">
   {% if complaints %}
   <form action="." method="GET" class="form-inline">
-    <!-- {% csrf_token %} -->
+    {% csrf_token %}
     {{ form|crispy }}
     <input type="submit" value="Szukaj">
   </form>
@@ -43,7 +43,7 @@
         <td>
           <ul>
             {% for fault in complaint.complaint_faults.all %}
-            <li>{{ forloop.counter }}.{{ fault.name }} - {{ fault.status }}</li>
+            <li>{{ forloop.counter }}.{{ fault.name }} - {{ fault.get_status_display }}</li>
             {% endfor %}
           </ul>
         </td>

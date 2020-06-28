@@ -6,7 +6,7 @@
     {% if complaint %}
       Nr reklamacji: {{ complaint }}<br>
       Data wystawienia: {{ complaint.entry_date|date:"d-m-Y" }}<br>
-      Status reklamacji: {{ complaint.status }}
+      Status reklamacji: {{ complaint.get_status_display }}
     {% endif %}
   </div>
 </div>
@@ -16,7 +16,7 @@
     Usterki:<br>
       {% for fault in complaint.complaint_faults.all %}
         <div class="container">
-          Usterka: {{ fault.name }} Status: {{ fault.status }} <a href="{% url 'book:fault_detail' fault.id %}">Pokaż</a>
+          Usterka: {{ fault.name }} Status: {{ fault.get_status_display }} <a href="{% url 'book:fault_detail' fault.id %}">Pokaż</a>
         </div>
       {% endfor %}
     {% endif %}
