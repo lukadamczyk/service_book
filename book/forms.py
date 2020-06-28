@@ -30,8 +30,12 @@ class FilterComplaintsForm(forms.ModelForm):
 
 class FilterFaultForm(forms.ModelForm):
 
-    date_from = forms.DateField(required=False)
-    date_to = forms.DateField(required=False)
+    date_from = forms.DateField(required=False,
+                                widget=DatePickerInput(format='MM/DD/YYYY'),
+                                label='Od')
+    date_to = forms.DateField(required=False,
+                              widget=DatePickerInput(format='MM/DD/YYYY'),
+                              label='Do')
 
     def __init__(self, *args, **kwargs):
         super(FilterFaultForm, self).__init__(*args, **kwargs)
@@ -41,16 +45,28 @@ class FilterFaultForm(forms.ModelForm):
     class Meta:
         model = Fault
         fields = ['status', 'vehicle', 'zr_number', 'date_from', 'date_to']
+        labels = {
+            'status': 'Status',
+            'vehicle': 'Pojazd',
+            'zr_number': 'Numer ZR',
+        }
 
 
 class AddComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        exclude = ['client']
+        exclude = ['client', 'tasks']
         widgets = {
             'entry_date': DatePickerInput(format='MM/DD/YYYY'),
             'end_date': DatePickerInput(format='MM/DD/YYYY'),
+        }
+        labels = {
+            'document_number': 'Nr reklamacji',
+            'entry_date': 'Od',
+            'end_date': 'Do',
+            'status': 'Status',
+            'vehicle': 'Pojazd'
         }
 
     def clean(self):
@@ -69,6 +85,16 @@ class AddFaultForm(forms.ModelForm):
         exclude = ['complaint', 'vehicle', 'entry_date']
         widgets = {
             'end_date': DatePickerInput(format='MM/DD/YYYY'),
+        }
+        labels = {
+            'name': 'Usterka',
+            'category': 'Kategoria',
+            'description': 'Opis',
+            'actions': 'Podjęte działania',
+            'comments': 'Uwagi',
+            'zr_number': 'Numer ZR',
+            'end_date': 'Data zakończenia',
+            'need': 'Potrzeby'
         }
 
     def clean(self):
@@ -100,6 +126,16 @@ class EditFaultForm(forms.ModelForm):
     class Meta:
         model = Fault
         exclude = ['complaint', 'vehicle', 'entry_date']
+        labels = {
+            'name': 'Usterka',
+            'category': 'Kategoria',
+            'description': 'Opis',
+            'actions': 'Podjęte działania',
+            'comments': 'Uwagi',
+            'zr_number': 'Numer ZR',
+            'end_date': 'Data zakończenia',
+            'need': 'Potrzeby'
+        }
 
 
 class EditComplaintForm(forms.ModelForm):
@@ -110,9 +146,15 @@ class EditComplaintForm(forms.ModelForm):
         self.fields['entry_date'].required = False
         self.fields['end_date'].required = False
         self.fields['status'].required = False
-        self.fields['tasks'].required = False
         self.fields['vehicle'].required = False
 
     class Meta:
         model = Complaint
-        exclude = ['client']
+        exclude = ['client', 'tasks']
+        labels = {
+            'document_number': 'Nr reklamacji',
+            'entry_date': 'Od',
+            'end_date': 'Do',
+            'status': 'Status',
+            'vehicle': 'Pojazd'
+        }
