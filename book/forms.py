@@ -92,6 +92,7 @@ class AddComplaintForm(forms.ModelForm):
                                             '{}'.format(datetime.date.today()))
 
 
+
 class AddFaultForm(forms.ModelForm):
 
     class Meta:
@@ -130,7 +131,10 @@ class AddFaultForm(forms.ModelForm):
         zr_number = cleaned_data.get('zr_number')
 
         if status == 'close' and end_date is None:
-            raise forms.ValidationError('Podaj datę zakończenia')
+            raise forms.ValidationError('Podaj datę zakończenia usterki')
+
+        if status == 'open' and end_date:
+            raise forms.ValidationError('Nie można podać daty zakończnia usterki przy otwarty statusie')
 
         if zr_number:
             if not re.match(r"^\d{6}$", zr_number):
