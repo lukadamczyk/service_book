@@ -99,16 +99,31 @@ def add_complaint(request):
         form_complaint = AddComplaintForm(request.POST)
         formset_fault = AddFaultFormSet(request.POST)
         if form_complaint.is_valid() and formset_fault.is_valid():
-            complaint =form_complaint.save(commit=False)
+            complaint = form_complaint.save(commit=False)
+            faults = []
+            for f in formset_fault:
+                form = f.save(commit=False)
+                if form.end_date and form.end_date > complaint.entry_date:
+                    messages.info(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                                           'wpłynięcia reklamacji')
+                    return render(request,
+                                  template_name='book/complaint/add.html',
+                                  context={'title': 'Reklamacje',
+                                           'form_complaint': form_complaint,
+                                           'formset_fault': formset_fault})
+                faults.append(form)
+            complaint = form_complaint.save(commit=False)
             complaint.client = complaint.vehicle.owner
             complaint.save()
-            for form in formset_fault:
-                fault = form.save(commit=False)
-                fault.complaint = complaint
-                fault.vehicle = complaint.vehicle
-                fault.entry_date = complaint.entry_date
-                fault.save()
 
+            for f in faults:
+                # f.save(commit=False)
+                f.complaint = complaint
+                f.vehicle = complaint.vehicle
+                f.entry_date = complaint.entry_date
+                f.save()
+
+            messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
     else:
         form_complaint = AddComplaintForm()
