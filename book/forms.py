@@ -69,6 +69,15 @@ class AddComplaintForm(forms.ModelForm):
             'vehicle': 'Pojazd'
         }
 
+
+    def __init__(self, *args, **kwargs):
+        super(AddComplaintForm, self).__init__(*args, **kwargs)
+        fields = ['document_number']
+        for field in fields:
+            self.fields[field].error_messages.update({
+                'required': 'To pole jest wymagane'
+            })
+
     def clean(self):
         cleaned_data = super().clean()
         status = cleaned_data.get('status')
@@ -102,6 +111,14 @@ class AddFaultForm(forms.ModelForm):
             'end_date': 'Data zakończenia',
             'need': 'Potrzeby'
         }
+
+    def __init__(self, *args, **kwargs):
+        super(AddFaultForm, self).__init__(*args, **kwargs)
+        fields = ['name', 'category', 'description', 'status']
+        for field in fields:
+            self.fields[field].error_messages.update({
+                'required': 'To pole jest wymagane'
+            })
 
     def clean(self):
         cleaned_data = super().clean()
