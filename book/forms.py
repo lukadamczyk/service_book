@@ -1,7 +1,9 @@
+import datetime, re
+
 from django import forms
 from .models import Complaint, Fault
 from bootstrap_datepicker_plus import DatePickerInput
-import datetime
+
 
 
 class FilterComplaintsForm(forms.ModelForm):
@@ -69,19 +71,26 @@ class AddComplaintForm(forms.ModelForm):
             'vehicle': 'Pojazd'
         }
 
+
+    def __init__(self, *args, **kwargs):
+        super(AddComplaintForm, self).__init__(*args, **kwargs)
+        fields = ['document_number']
+        for field in fields:
+            self.fields[field].error_messages.update({
+                'required': 'To pole jest wymagane',
+                'unique': 'Dokument o takim numerze już istnieje'
+            })
+
     def clean(self):
         cleaned_data = super().clean()
-        status = cleaned_data.get('status')
-        end_date = cleaned_data.get('end_date')
         entry_date = cleaned_data.get('entry_date')
 
-        if status == 'close' and end_date is None:
-            raise forms.ValidationError('Podaj datę zakończenia')
         if entry_date:
             today = datetime.date.today()
             if entry_date > today:
                 raise forms.ValidationError('Podaj właściwą datę rozpoczęcia reklamacji, nie może być pózniejsza niż '
                                             '{}'.format(datetime.date.today()))
+
 
 
 class AddFaultForm(forms.ModelForm):
@@ -103,15 +112,33 @@ class AddFaultForm(forms.ModelForm):
             'need': 'Potrzeby'
         }
 
+    def __init__(self, *args, **kwargs):
+        super(AddFaultForm, self).__init__(*args, **kwargs)
+        fields = ['name', 'category', 'description', 'status']
+        for field in fields:
+            self.fields[field].error_messages.update({
+                'required': 'To pole jest wymagane'
+            })
+            if field == 'category':
+                self.fields[field].error_messages.update({
+                    'invalid_choice': 'Wybierz jedną z proponowanych kategori'
+                })
+
     def clean(self):
         cleaned_data = super().clean()
         status = cleaned_data.get('status')
         end_date = cleaned_data.get('end_date')
-        # import pdb;
-        # pdb.set_trace()
+        zr_number = cleaned_data.get('zr_number')
 
         if status == 'close' and end_date is None:
-            raise forms.ValidationError('Podaj datę zakończenia')
+            raise forms.ValidationError('Podaj datę zakończenia usterki')
+
+        if status == 'open' and end_date:
+            raise forms.ValidationError('Nie można podać daty zakończnia usterki przy otwarty statusie')
+
+        if zr_number:
+            if not re.match(r"^\d{6}$", zr_number):
+                raise forms.ValidationError('Podaj właściwy numer ZR (6 cyfr)')
 
 
 class NumberOfFaults(forms.Form):

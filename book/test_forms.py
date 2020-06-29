@@ -1,9 +1,9 @@
 import datetime
 
 from django.test import TestCase
-from .forms import AddComplaintForm, EditComplaintForm
+from .forms import AddComplaintForm, EditComplaintForm, AddFaultForm
 from .models import Vehicle, Trolleys, Owner
-from .test_models import create_vehicle, create_owner, create_trolleys
+from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault
 
 
 today = datetime.date.today()
@@ -20,6 +20,21 @@ def create_form(doc, date, status, vehicle, form):
     }
     add_form = form(data)
     return add_form
+
+def create_form_falut(name, category, description, action, comments, zr, status, end_date, need, form):
+    data = {
+        'name': name,
+        'category': category,
+        'description': description,
+        'actions': action,
+        'comments': comments,
+        'zr_number': zr,
+        'status': status,
+        'end_date': end_date,
+        'need': need
+    }
+    fault_form = form(data)
+    return fault_form
 
 class AddComplainFormTestCase(TestCase):
     def setUp(self):
@@ -60,3 +75,83 @@ class AddComplainFormTestCase(TestCase):
         self.assertFalse(test_form.is_valid())
         test_form = create_form('Kw23', yesterday, 'open', 3, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
+
+
+class AddFaultFormTestCase(TestCase):
+    def setUp(self):
+        owner = create_owner()
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
+        complaint = create_complaint(vehicle=vehicle, client=owner)
+
+    def test_valid_form_fault(self):
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'open', '', '', AddFaultForm)
+        self.assertTrue(test_form.is_valid())
+
+    def test_invalid_form_falut_name(self):
+        test_form = create_form_falut('', 'podłoga', 'test', '', '', '', 'open', '', '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'name': ['To pole jest wymagane']})
+    def test_invalid_form_falut_category(self):
+        test_form = create_form_falut('Kw12', '', 'test', '', '', '', 'open', '', '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'category': ['To pole jest wymagane']})
+        test_form = create_form_falut('Kw12', 'test', 'test', '', '', '', 'open', '', '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'category': ['Wybierz jedną z proponowanych kategori']})
+
+    def test_invalid_form_falut_description(self):
+        test_form = create_form_falut('KW12', 'podłoga', '', '', '', '', 'open', '', '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'description': ['To pole jest wymagane']})
+
+    def test_valid_form_zr(self):
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '123421', 'open', '', '',
+                                      AddFaultForm)
+        self.assertTrue(test_form.is_valid())
+
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '12344', 'open', '', '',
+                                  AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Podaj właściwy numer ZR (6 cyfr)']})
+
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '1234435', 'open', '', '',
+                                      AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Podaj właściwy numer ZR (6 cyfr)']})
+
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', 'a34dc1', 'open', '', '',
+                                      AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Podaj właściwy numer ZR (6 cyfr)']})
+
+    def test_valid_form_status(self):
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', '', '', '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'status': ['To pole jest wymagane']})
+
+    def test_valid_form_end_date(self):
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'close', today, '',
+                                      AddFaultForm)
+        self.assertTrue(test_form.is_valid())
+
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'open', yesterday, '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Nie można podać daty zakończnia usterki przy otwarty statusie']})
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'close', '', '',
+                                      AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Podaj datę zakończenia usterki']})
+
+
+
