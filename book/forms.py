@@ -77,17 +77,14 @@ class AddComplaintForm(forms.ModelForm):
         fields = ['document_number']
         for field in fields:
             self.fields[field].error_messages.update({
-                'required': 'To pole jest wymagane'
+                'required': 'To pole jest wymagane',
+                'unique': 'Dokument o takim numerze już istnieje'
             })
 
     def clean(self):
         cleaned_data = super().clean()
-        status = cleaned_data.get('status')
-        end_date = cleaned_data.get('end_date')
         entry_date = cleaned_data.get('entry_date')
 
-        if status == 'close' and end_date is None:
-            raise forms.ValidationError('Podaj datę zakończenia')
         if entry_date:
             today = datetime.date.today()
             if entry_date > today:
