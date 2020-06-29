@@ -94,7 +94,7 @@ DATABASES = {
             'read_default_file': '/etc/mysql/my.cnf',
         },
         'TEST': {
-            'CHARSET': 'utf8',
+            'CHARSET': 'utf8mb4',
         },
     }
 }
