@@ -317,6 +317,9 @@ class AddComplaintView(TestCase):
         fault = Fault.objects.get(complaint=complaint)
         self.assertEqual(fault.zr_number, '121234')
         self.assertEqual(fault.entry_date, complaint.entry_date)
+        user = User.objects.get(username='tom')
+        self.assertEqual(complaint.author, user)
+        self.assertEqual(complaint.published_date, datetime.date.today())
 
     def test_invaild_add_fault_close_without_end_date(self):
         client = Owner.objects.first()
