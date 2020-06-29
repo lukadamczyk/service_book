@@ -103,7 +103,7 @@ def add_complaint(request):
             faults = []
             for f in formset_fault:
                 form = f.save(commit=False)
-                if form.end_date and form.end_date > complaint.entry_date:
+                if form.end_date and form.end_date < complaint.entry_date:
                     messages.info(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
                                            'wpłynięcia reklamacji')
                     return render(request,
