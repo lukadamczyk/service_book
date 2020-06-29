@@ -139,11 +139,19 @@ class AddFaultFormTestCase(TestCase):
                          {'status': ['To pole jest wymagane']})
 
     def test_valid_form_end_date(self):
-        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'open', today, '', AddFaultForm)
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'close', today, '',
+                                      AddFaultForm)
         self.assertTrue(test_form.is_valid())
 
         test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'open', yesterday, '', AddFaultForm)
-        self.assertTrue(test_form.is_valid())
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Nie można podać daty zakończnia usterki przy otwarty statusie']})
+        test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'close', '', '',
+                                      AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'__all__': ['Podaj datę zakończenia usterki']})
 
 
 
