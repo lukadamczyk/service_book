@@ -1,7 +1,9 @@
+import datetime, re
+
 from django import forms
 from .models import Complaint, Fault
 from bootstrap_datepicker_plus import DatePickerInput
-import datetime
+
 
 
 class FilterComplaintsForm(forms.ModelForm):
@@ -119,16 +121,23 @@ class AddFaultForm(forms.ModelForm):
             self.fields[field].error_messages.update({
                 'required': 'To pole jest wymagane'
             })
+            if field == 'category':
+                self.fields[field].error_messages.update({
+                    'invalid_choice': 'Wybierz jedną z proponowanych kategori'
+                })
 
     def clean(self):
         cleaned_data = super().clean()
         status = cleaned_data.get('status')
         end_date = cleaned_data.get('end_date')
-        # import pdb;
-        # pdb.set_trace()
+        zr_number = cleaned_data.get('zr_number')
 
         if status == 'close' and end_date is None:
             raise forms.ValidationError('Podaj datę zakończenia')
+
+        if zr_number:
+            if not re.match(r"^\d{6}$", zr_number):
+                raise forms.ValidationError('Podaj właściwy numer ZR (6 cyfr)')
 
 
 class NumberOfFaults(forms.Form):
