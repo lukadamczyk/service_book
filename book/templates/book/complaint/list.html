@@ -36,7 +36,11 @@
       {% for complaint in complaints %}
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter }}</th>
-        <td class="text-center"><a href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
+        {% if complaint.status == 'open' %}
+          <td class="text-center"><a class="text-success" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
+        {% else %}
+          <td class="text-center"><a class="text-danger" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
+        {% endif %}
         <td class="text-center">{{ complaint.vehicle.get_full_name }}</td>
         <td class="text-center">{{ complaint.entry_date|date:"d-m-Y" }}</td>
         <td class="text-center">{{ complaint.end_date|date:"d-m-Y" }}</td>
