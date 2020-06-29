@@ -59,7 +59,7 @@ class AddComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        exclude = ['client', 'tasks', 'end_date']
+        exclude = ['client', 'tasks', 'end_date', 'author']
         widgets = {
             'entry_date': DatePickerInput(format='MM/DD/YYYY'),
             'end_date': DatePickerInput(format='MM/DD/YYYY'),

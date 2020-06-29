@@ -114,6 +114,7 @@ def add_complaint(request):
                 faults.append(form)
             complaint = form_complaint.save(commit=False)
             complaint.client = complaint.vehicle.owner
+            complaint.author = request.user
             complaint.save()
 
             for f in faults:

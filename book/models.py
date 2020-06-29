@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
 
@@ -142,6 +143,7 @@ class Complaint(models.Model):
         ('open', 'Otwarta'),
         ('close', 'Zamknięta')
     )
+    published_date = models.DateField(auto_now_add=True)
     document_number = models.CharField(max_length=50,
                                        unique=True)
     entry_date = models.DateField()
@@ -159,6 +161,11 @@ class Complaint(models.Model):
     vehicle = models.ForeignKey(Vehicle,
                                 related_name='complaint_vehicles',
                                 on_delete=models.CASCADE)
+    author = models.ForeignKey(User,
+                               related_name='auth_complaint',
+                               on_delete=models.CASCADE,
+                               blank=True,
+                               null=True)
 
     def __str__(self):
         return self.document_number
