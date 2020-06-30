@@ -85,13 +85,16 @@ class AddComplaintForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         entry_date = cleaned_data.get('entry_date')
+        end_date = cleaned_data.get('end_date')
 
         if entry_date:
             today = datetime.date.today()
             if entry_date > today:
                 raise forms.ValidationError('Podaj właściwą datę rozpoczęcia reklamacji, nie może być pózniejsza niż '
                                             '{}'.format(datetime.date.today()))
-
+        if end_date and end_date < entry_date:
+            raise forms.ValidationError('Data zakończenia reklamacji nie moze być wcześniejsza niź '
+                                                        'doata rozpoczęcia')
 
 
 class AddFaultForm(forms.ModelForm):
