@@ -11,10 +11,11 @@ day = datetime.timedelta(1)
 yesterday = today - day
 tomorrow = today + day
 
-def create_form(doc, date, status, vehicle, form):
+def create_form(doc, date, end_date, status, vehicle, form):
     data = {
         'document_number': doc,
         'entry_date': date,
+        'end_date': end_date,
         'status': status,
         'vehicle': vehicle
     }
@@ -44,36 +45,43 @@ class AddComplainFormTestCase(TestCase):
 
     def test_valid_form(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('Kw23', today, 'open', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', today, '', 'open', vehicle.id, AddComplaintForm)
         self.assertTrue(test_form.is_bound)
         self.assertTrue(test_form.is_valid())
 
     def test_invalid_form_document_number(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('', today, 'open', vehicle.id, AddComplaintForm)
+        test_form = create_form('', today, '', 'open', vehicle.id, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
 
     def test_invalid_form_date(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('Kw23', yesterday, 'open', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', yesterday, '', 'open', vehicle.id, AddComplaintForm)
         self.assertTrue(test_form.is_valid())
-        test_form = create_form('Kw23', tomorrow, 'open', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', tomorrow, '', 'open', vehicle.id, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
         self.assertEqual(test_form.errors, {'__all__': ['Podaj właściwą datę rozpoczęcia reklamacji, nie może być pózniejsza niż '
                                             '{}'.format(datetime.date.today())]})
 
+    def test_invalid_form_end_date(self):
+        vehicle = Vehicle.objects.get(number='007')
+        test_form = create_form('Kw23', today, yesterday, 'open', vehicle.id, AddComplaintForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors, {'__all__': ['Data zakończenia reklamacji nie moze być wcześniejsza niź '
+                                                        'doata rozpoczęcia']})
+
     def test_invalid_form_status(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('Kw23', yesterday, '', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', yesterday, '', '', vehicle.id, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
-        test_form = create_form('Kw23', yesterday, 'text', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', yesterday, '', 'text', vehicle.id, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
 
     def test_invalid_form_vehicle(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('Kw23', yesterday, 'open', '', AddComplaintForm)
+        test_form = create_form('Kw23', yesterday, '', 'open', '', AddComplaintForm)
         self.assertFalse(test_form.is_valid())
-        test_form = create_form('Kw23', yesterday, 'open', 3, AddComplaintForm)
+        test_form = create_form('Kw23', yesterday, '', 'open', 3, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
 
 
@@ -109,7 +117,7 @@ class AddFaultFormTestCase(TestCase):
         self.assertEqual(test_form.errors,
                          {'description': ['To pole jest wymagane']})
 
-    def test_valid_form_zr(self):
+    def test_invalid_form_zr(self):
         test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '123421', 'open', '', '',
                                       AddFaultForm)
         self.assertTrue(test_form.is_valid())
@@ -132,13 +140,13 @@ class AddFaultFormTestCase(TestCase):
         self.assertEqual(test_form.errors,
                          {'__all__': ['Podaj właściwy numer ZR (6 cyfr)']})
 
-    def test_valid_form_status(self):
+    def test_invalid_form_status(self):
         test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', '', '', '', AddFaultForm)
         self.assertFalse(test_form.is_valid())
         self.assertEqual(test_form.errors,
                          {'status': ['To pole jest wymagane']})
 
-    def test_valid_form_end_date(self):
+    def test_invalid_form_end_date(self):
         test_form = create_form_falut('usterka silnika', 'podłoga', 'test', '', '', '', 'close', today, '',
                                       AddFaultForm)
         self.assertTrue(test_form.is_valid())
