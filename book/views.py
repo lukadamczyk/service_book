@@ -138,6 +138,8 @@ def add_complaint(request):
 
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
+        else:
+            messages.error(request, 'Popraw dane wporowadzone w formularzu')
     else:
         form_complaint = AddComplaintForm()
         formset_fault = AddFaultFormSet()
