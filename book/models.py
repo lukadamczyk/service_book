@@ -143,7 +143,7 @@ class Complaint(models.Model):
         ('open', 'Otwarta'),
         ('close', 'Zamknięta')
     )
-    published_date = models.DateField(auto_now_add=True)
+    published_date = models.DateTimeField(auto_now_add=True)
     document_number = models.CharField(max_length=50,
                                        unique=True)
     entry_date = models.DateField()
@@ -171,7 +171,7 @@ class Complaint(models.Model):
         return self.document_number
 
     class Meta:
-        ordering = ('-entry_date',)
+        ordering = ('-published_date',)
 
 
 class Fault(models.Model):
