@@ -86,6 +86,7 @@ class AddComplaintForm(forms.ModelForm):
         cleaned_data = super().clean()
         entry_date = cleaned_data.get('entry_date')
         end_date = cleaned_data.get('end_date')
+        status = cleaned_data.get('status')
 
         if entry_date:
             today = datetime.date.today()
@@ -94,7 +95,14 @@ class AddComplaintForm(forms.ModelForm):
                                             '{}'.format(datetime.date.today()))
         if end_date and end_date < entry_date:
             raise forms.ValidationError('Data zakończenia reklamacji nie moze być wcześniejsza niź '
-                                                        'doata rozpoczęcia')
+                                                        'data rozpoczęcia')
+        if end_date and status == 'open':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                                        'reklamacji i podać datę zakończenia')
+
+        if not end_date and status == 'close':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                        'reklamacji i podać datę zakończenia')
 
 
 class AddFaultForm(forms.ModelForm):
