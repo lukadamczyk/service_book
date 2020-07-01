@@ -319,14 +319,15 @@ class AddComplaintView(TestCase):
         self.assertEqual(fault.entry_date, complaint.entry_date)
         user = User.objects.get(username='tom')
         self.assertEqual(complaint.author, user)
-        self.assertEqual(complaint.published_date, datetime.date.today())
+        self.assertEqual(complaint.published_date.date(), datetime.datetime.today().date())
 
-    def test_invaild_add_fault_close_without_end_date(self):
+    def test_invalid_add_complaint_end_date_without_fault_end_date(self):
         client = Owner.objects.first()
         vehicle = Vehicle.objects.first()
-        data = {'document_number': 'KW12322',
+        data = {'document_number': 'KW1234',
                 'entry_date': datetime.date(2019, 1, 1),
-                'status': 'open',
+                'end_date': datetime.date(2019, 1, 2),
+                'status': 'close',
                 'vehicle': vehicle.id,
                 'form-TOTAL_FORMS': 1,
                 'form-INITIAL_FORMS': 0,

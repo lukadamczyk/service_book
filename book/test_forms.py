@@ -65,10 +65,25 @@ class AddComplainFormTestCase(TestCase):
 
     def test_invalid_form_end_date(self):
         vehicle = Vehicle.objects.get(number='007')
-        test_form = create_form('Kw23', today, yesterday, 'open', vehicle.id, AddComplaintForm)
+        test_form = create_form('Kw23', today, yesterday, 'close', vehicle.id, AddComplaintForm)
         self.assertFalse(test_form.is_valid())
         self.assertEqual(test_form.errors, {'__all__': ['Data zakończenia reklamacji nie moze być wcześniejsza niź '
-                                                        'doata rozpoczęcia']})
+                                                        'data rozpoczęcia']})
+
+    def test_invalid_form_end_date_and_open_status(self):
+        vehicle = Vehicle.objects.get(number='007')
+        test_form = create_form('Kw23', today, tomorrow, 'open', vehicle.id, AddComplaintForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors, {'__all__': ['Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                                        'reklamacji i podać datę zakończenia']})
+
+    def test_invalid_form_status_close_without_end_date(self):
+        vehicle = Vehicle.objects.get(number='007')
+        test_form = create_form('Kw23', today, '', 'close', vehicle.id, AddComplaintForm)
+        self.assertTrue(test_form.is_bound)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors, {'__all__': ['Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                                        'reklamacji i podać datę zakończenia']})
 
     def test_invalid_form_status(self):
         vehicle = Vehicle.objects.get(number='007')
