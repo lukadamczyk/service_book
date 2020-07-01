@@ -59,7 +59,7 @@ class AddComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        exclude = ['client', 'tasks', 'end_date', 'author']
+        exclude = ['client', 'tasks', 'author']
         widgets = {
             'entry_date': DatePickerInput(format='MM/DD/YYYY'),
             'end_date': DatePickerInput(format='MM/DD/YYYY'),
@@ -67,6 +67,7 @@ class AddComplaintForm(forms.ModelForm):
         labels = {
             'document_number': 'Nr reklamacji',
             'entry_date': 'Data rozpoczęcia',
+            'end_date': 'Data zakończenia',
             'status': 'Status',
             'vehicle': 'Pojazd'
         }
@@ -84,13 +85,24 @@ class AddComplaintForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         entry_date = cleaned_data.get('entry_date')
+        end_date = cleaned_data.get('end_date')
+        status = cleaned_data.get('status')
 
         if entry_date:
             today = datetime.date.today()
             if entry_date > today:
                 raise forms.ValidationError('Podaj właściwą datę rozpoczęcia reklamacji, nie może być pózniejsza niż '
                                             '{}'.format(datetime.date.today()))
+        if end_date and end_date < entry_date:
+            raise forms.ValidationError('Data zakończenia reklamacji nie moze być wcześniejsza niź '
+                                                        'data rozpoczęcia')
+        if end_date and status == 'open':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                                        'reklamacji i podać datę zakończenia')
 
+        if not end_date and status == 'close':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                        'reklamacji i podać datę zakończenia')
 
 
 class AddFaultForm(forms.ModelForm):

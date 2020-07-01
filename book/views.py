@@ -112,6 +112,18 @@ def add_complaint(request):
                                            'form_complaint': form_complaint,
                                            'formset_fault': formset_fault})
                 faults.append(form)
+
+            if complaint.end_date or complaint.status == 'close':
+                for f in faults:
+                    if f.status == 'open':
+                        messages.info(request, 'Aby zamknąć reklamację wyszystekie usterki muszą mieć status zamknięty i datę '
+                                      'zakończenia')
+                        return render(request,
+                                      template_name='book/complaint/add.html',
+                                      context={'title': 'Reklamacje',
+                                               'form_complaint': form_complaint,
+                                               'formset_fault': formset_fault})
+
             complaint = form_complaint.save(commit=False)
             complaint.client = complaint.vehicle.owner
             complaint.author = request.user
@@ -126,6 +138,8 @@ def add_complaint(request):
 
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
+        else:
+            messages.error(request, 'Popraw dane wporowadzone w formularzu')
     else:
         form_complaint = AddComplaintForm()
         formset_fault = AddFaultFormSet()
