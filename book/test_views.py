@@ -5,7 +5,6 @@ from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
 from .forms import FilterComplaintsForm, FilterFaultForm
 
-
 import datetime
 
 
@@ -377,5 +376,53 @@ class AddComplaintView(TestCase):
         self.assertEqual(len(complaints), 0)
         self.assertContains(response, 'Data zakończenia usterki nie może być wcześniejsza niż data '
                                            'wpłynięcia reklamacji')
+
+
+class EditComplaintFormTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        create_complaint(vehicle, owner, doc_number='reklamacja 32')
+
+    def test_valid_edit_form(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        data = {'document_number': 'KW12345',
+                'entry_date': datetime.date(2019, 1, 12),
+                'end_date': datetime.date(2019, 1, 13),
+                'status': 'close',
+                'vehicle': vehicle.id}
+        response = self.client.post(reverse('book:edit_complaint', kwargs={'id': complaint.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyśnnie')
+
+    def test_invalid_edit_form_without_changes(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        complaint.end_date = datetime.date(2019, 2, 2)
+        complaint.status = 'close'
+        complaint.save()
+        data = {'document_number': complaint.document_number,
+                'entry_date': complaint.entry_date,
+                'end_date': complaint.end_date,
+                'status': complaint.status,
+                'vehicle': complaint.vehicle.id}
+        response = self.client.post(reverse('book:edit_complaint', kwargs={'id': complaint.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/edit.html')
+        self.assertContains(response, 'Nie wprowadzono żadnych zmian')
 
 

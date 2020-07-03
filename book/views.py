@@ -200,11 +200,41 @@ def edit_fault(request, id):
 def edit_complaint(request, id):
     complaint = get_object_or_404(Complaint, id=id)
     if request.method == 'POST':
-        form = EditComplaintForm(instance=complaint,
-                             data=request.POST)
+        form = EditComplaintForm(request.POST,
+                                 instance=complaint)
         if form.is_valid():
-            form.save()
-        return redirect(reverse('book:complaint_list'))
+            complaint = get_object_or_404(Complaint, id=id)
+            cd = form.cleaned_data
+            if cd['document_number'] == complaint.document_number and cd['entry_date'] == complaint.entry_date and \
+                    cd['end_date'] == complaint.end_date and cd['status'] == complaint.status and cd['vehicle'] == \
+                    complaint.vehicle and complaint.status:
+                messages.info(request, 'Nie wprowadzono żadnych zmian')
+                return render(request,
+                              template_name='book/complaint/edit.html',
+                              context={'title': 'Usterka',
+                                       'complaint': complaint,
+                                       'form': form})
+
+            if complaint.document_number != cd['document_number']:
+                complaint.document_number = cd['document_number']
+
+            if complaint.entry_date != cd['entry_date']:
+                complaint.entry_date = cd['entry_date']
+
+            if complaint.end_date != cd['end_date']:
+                complaint.end_date = cd['end_date']
+
+            if complaint.status != cd['status']:
+                complaint.status = cd['status']
+
+            if complaint.vehicle != cd['vehicle']:
+                complaint.vehicle = cd['vehicle']
+                complaint.client = cd['vehicle'].client
+
+            complaint.save()
+            messages.success(request, 'Zmiany zapisano pomyśnnie')
+            return redirect(reverse('book:complaint_list'))
+        messages.error(request, 'Popraw wprowadzone dane')
     else:
         form = EditComplaintForm(instance=complaint)
     return render(request,
