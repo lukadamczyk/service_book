@@ -320,6 +320,32 @@ class AddComplaintView(TestCase):
         self.assertEqual(complaint.author, user)
         self.assertEqual(complaint.published_date.date(), datetime.datetime.today().date())
 
+    def test_invalid_add_complaint_blank_fault(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        data = {'document_number': 'KW1234',
+                'entry_date': datetime.date(2019, 1, 1),
+                'status': 'open',
+                'vehicle': vehicle.id,
+                'form-TOTAL_FORMS': 1,
+                'form-INITIAL_FORMS': 0,
+                'form-MIN_NUM_FORMS': 0,
+                'form-MAX_NUM_FORMS': 1000,
+                'form-0-name': '',
+                'form-0-category': '',
+                'form-0-zr_number': '',
+                'form-0-status': '',
+                'form-0-description': '',
+                'form-0-end_date': ''}
+        response = self.client.post('/complaint/add/?number={}'.format(vehicle.id),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/complaint/add.html')
+        complaints = Complaint.objects.all()
+        self.assertEqual(len(complaints), 0)
+        self.assertContains(response, 'Wprowadź wymagane dane usterki')
+
     def test_invalid_add_complaint_end_date_without_fault_end_date(self):
         client = Owner.objects.first()
         vehicle = Vehicle.objects.first()

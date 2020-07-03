@@ -103,6 +103,13 @@ def add_complaint(request):
             faults = []
             for f in formset_fault:
                 form = f.save(commit=False)
+                if not form.name and not form.category and not form.description and not form.status:
+                    messages.error(request, 'Wprowadź wymagane dane usterki')
+                    return render(request,
+                                  template_name='book/complaint/add.html',
+                                  context={'title': 'Reklamacje',
+                                           'form_complaint': form_complaint,
+                                           'formset_fault': formset_fault})
                 if form.end_date and form.end_date < complaint.entry_date:
                     messages.info(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
                                            'wpłynięcia reklamacji')
