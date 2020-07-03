@@ -9,10 +9,16 @@ from bootstrap_datepicker_plus import DatePickerInput
 class FilterComplaintsForm(forms.ModelForm):
 
     date_from = forms.DateField(required=False,
-                                widget=DatePickerInput(format='MM/DD/YYYY'),
+                                widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
                                 label='Od')
     date_to = forms.DateField(required=False,
-                              widget=DatePickerInput(format='MM/DD/YYYY'),
+                              widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
                               label='Do')
 
     def __init__(self, *args, **kwargs):
@@ -34,10 +40,16 @@ class FilterComplaintsForm(forms.ModelForm):
 class FilterFaultForm(forms.ModelForm):
 
     date_from = forms.DateField(required=False,
-                                widget=DatePickerInput(format='MM/DD/YYYY'),
+                                widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
                                 label='Od')
     date_to = forms.DateField(required=False,
-                              widget=DatePickerInput(format='MM/DD/YYYY'),
+                              widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
                               label='Do')
 
     def __init__(self, *args, **kwargs):
@@ -121,7 +133,10 @@ class AddFaultForm(forms.ModelForm):
         model = Fault
         exclude = ['complaint', 'vehicle', 'entry_date']
         widgets = {
-            'end_date': DatePickerInput(format='MM/DD/YYYY'),
+            'end_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
         }
         labels = {
             'name': 'Usterka',
