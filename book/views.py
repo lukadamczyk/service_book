@@ -247,7 +247,7 @@ def edit_complaint(request, id):
 
             if complaint.vehicle != cd['vehicle']:
                 complaint.vehicle = cd['vehicle']
-                complaint.client = cd['vehicle'].client
+                complaint.client = cd['vehicle'].owner
 
             complaint.save()
             messages.success(request, 'Zmiany zapisano pomyśnnie')
