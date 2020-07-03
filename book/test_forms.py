@@ -82,6 +82,11 @@ class AddComplainFormTestCase(TestCase):
         self.assertEqual(test_form.errors, {'__all__': ['Data zakończenia reklamacji nie moze być wcześniejsza niź '
                                                         'data rozpoczęcia']})
 
+        test_form = create_form('Kw23', today, tomorrow, 'close', vehicle.id, AddComplaintForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors, {'__all__': ['Data zamknięcia reklamacji nie może być poźniejsza niż {}'.format(
+            datetime.date.today())]})
+
     def test_invalid_form_end_date_and_open_status(self):
         vehicle = Vehicle.objects.get(number='007')
         test_form = create_form('Kw23', today, tomorrow, 'open', vehicle.id, AddComplaintForm)
