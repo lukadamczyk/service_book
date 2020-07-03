@@ -36,7 +36,7 @@
       {% for complaint in complaints %}
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter }}</th>
-        {% if complaint.status == 'open' %}
+        {% if complaint.status == 'close' %}
           <td class="text-center"><a class="text-success" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
         {% else %}
           <td class="text-center"><a class="text-danger" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
