@@ -103,6 +103,10 @@ class AddComplaintForm(forms.ModelForm):
         if not end_date and status == 'close':
             raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
                                         'reklamacji i podać datę zakończenia')
+        if end_date:
+            if end_date > datetime.date.today() and status == 'close':
+                raise forms.ValidationError('Data zamknięcia reklamacji nie może być poźniejsza niż {}'.format(
+                datetime.date.today()))
 
 
 class AddFaultForm(forms.ModelForm):
