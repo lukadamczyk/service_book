@@ -203,3 +203,38 @@ class EditComplaintForm(forms.ModelForm):
             'status': 'Status',
             'vehicle': 'Pojazd'
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        doc_number = cleaned_data.get('document_number')
+        entry_date = cleaned_data.get('entry_date')
+        end_date = cleaned_data.get('end_date')
+        status = cleaned_data.get('status')
+        vehicle = cleaned_data.get('vehicle')
+
+        if not doc_number:
+            raise forms.ValidationError('Wprowadź numer reklamacji')
+
+        if entry_date:
+            if entry_date > datetime.date.today():
+                raise forms.ValidationError('Data rozpoczęcia reklamacji nie może być późniejsza niż {}'.format(
+                    datetime.date.today()))
+
+        if not entry_date:
+            raise forms.ValidationError('Wprowadź datę rozpoczęcia reklamacji')
+
+        if end_date and end_date < entry_date:
+            raise forms.ValidationError('Data zakończenia reklamacji nie może być wcześniejsza niż '
+                                                        'data rozpoczęcia')
+        if end_date and status == 'open':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                                        'reklamacji i podać datę zakończenia')
+
+        if not end_date and status == 'close':
+            raise forms.ValidationError('Aby zamknąć rekalacje potrzeba wybrać zamknięty status '
+                                        'reklamacji i podać datę zakończenia')
+
+        if end_date:
+            if end_date > datetime.date.today() and status == 'close':
+                raise forms.ValidationError('Data zamknięcia reklamacji nie może być poźniejsza niż {}'.format(
+                datetime.date.today()))
