@@ -61,8 +61,14 @@ class AddComplaintForm(forms.ModelForm):
         model = Complaint
         exclude = ['client', 'tasks', 'author']
         widgets = {
-            'entry_date': DatePickerInput(format='MM/DD/YYYY'),
-            'end_date': DatePickerInput(format='MM/DD/YYYY'),
+            'entry_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+            'end_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
         }
         labels = {
             'document_number': 'Nr reklamacji',
@@ -199,11 +205,21 @@ class EditComplaintForm(forms.ModelForm):
 
     class Meta:
         model = Complaint
-        exclude = ['client', 'tasks']
+        exclude = ['tasks', 'author', 'client']
+        widgets = {
+            'entry_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+            'end_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+        }
         labels = {
             'document_number': 'Nr reklamacji',
-            'entry_date': 'Od',
-            'end_date': 'Do',
+            'entry_date': 'Data rozpoczęcia',
+            'end_date': 'Data zakończenia',
             'status': 'Status',
             'vehicle': 'Pojazd'
         }
