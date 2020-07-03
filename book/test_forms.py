@@ -37,6 +37,18 @@ def create_form_falut(name, category, description, action, comments, zr, status,
     fault_form = form(data)
     return fault_form
 
+def create_edit_form(doc, entry_date, end_date, status, client, vehicle):
+    data = {
+        'document_number': doc,
+        'entry_date': entry_date,
+        'end_date': end_date,
+        'status': status,
+        'client': client,
+        'vehicle': vehicle
+    }
+    edit_form = EditComplaintForm(data)
+    return edit_form
+
 class AddComplainFormTestCase(TestCase):
     def setUp(self):
         owner = create_owner()
@@ -175,6 +187,48 @@ class AddFaultFormTestCase(TestCase):
         self.assertFalse(test_form.is_valid())
         self.assertEqual(test_form.errors,
                          {'__all__': ['Podaj datę zakończenia usterki']})
+
+
+class EditComplaintFormTestCase(TestCase):
+    def setUp(self):
+        owner = create_owner()
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        create_vehicle(trolleys, owner, number='007', vehicle_type='SA132')
+
+    def test_invalid_edit_complaint_document_number(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        form = create_edit_form('', yesterday, today, 'close', client.id, vehicle.id)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Wprowadź numer reklamacji']})
+
+    def test_invalid_edit_complaint_entry_date(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        form = create_edit_form('KW1234', tomorrow, today, 'close', client.id, vehicle.id)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Data rozpoczęcia reklamacji nie może być późniejsza niż {}'.format(datetime.date.today())]})
+
+        form = create_edit_form('KW1234', '', today, 'close', client.id, vehicle.id)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Wprowadź datę rozpoczęcia reklamacji']})
+
+    def test_invalid_edit_complaint_end_date(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        form = create_edit_form('KW1234', today, yesterday, 'close', client.id, vehicle.id)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Data zakończenia reklamacji nie może być wcześniejsza niż data '
+                                                   'rozpoczęcia']})
+
+        form = create_edit_form('KW1234', today, tomorrow, 'close', client.id, vehicle.id)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Data zamknięcia reklamacji nie może być poźniejsza niż {}'.format(
+            datetime.date.today())]})
+
+
+
+
 
 
 
