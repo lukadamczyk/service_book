@@ -133,6 +133,15 @@ class AddFaultFormTestCase(TestCase):
         self.assertFalse(test_form.is_valid())
         self.assertEqual(test_form.errors,
                          {'name': ['To pole jest wymagane']})
+
+        test_form = create_form_falut('asdfgqwertqwertqwertqwertqwertqw2wcfreota', 'podłoga', 'test', '', '', '',
+                                      'open', '',
+                                      '', AddFaultForm)
+        self.assertFalse(test_form.is_valid())
+        self.assertEqual(test_form.errors,
+                         {'name': ['To pole może zawierać maksymalinie 40 znaków']})
+
+
     def test_invalid_form_falut_category(self):
         test_form = create_form_falut('Kw12', '', 'test', '', '', '', 'open', '', '', AddFaultForm)
         self.assertFalse(test_form.is_valid())

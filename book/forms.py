@@ -160,6 +160,10 @@ class AddFaultForm(forms.ModelForm):
                 self.fields[field].error_messages.update({
                     'invalid_choice': 'Wybierz jedną z proponowanych kategori'
                 })
+            if field == 'name':
+                self.fields[field].error_messages.update({
+                    'max_length': 'To pole może zawierać maksymalinie 40 znaków'
+                })
 
     def clean(self):
         cleaned_data = super().clean()
