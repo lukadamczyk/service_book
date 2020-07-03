@@ -110,9 +110,19 @@ def add_complaint(request):
                                   context={'title': 'Reklamacje',
                                            'form_complaint': form_complaint,
                                            'formset_fault': formset_fault})
+
                 if form.end_date and form.end_date < complaint.entry_date:
-                    messages.info(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                    messages.error(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
                                            'wpłynięcia reklamacji')
+                    return render(request,
+                                  template_name='book/complaint/add.html',
+                                  context={'title': 'Reklamacje',
+                                           'form_complaint': form_complaint,
+                                           'formset_fault': formset_fault})
+
+                if form.end_date and complaint.end_date and form.end_date > complaint.end_date:
+                    messages.error(request, 'Data zakończenia usterki nie może być późniejsza od daty zamknięcia '
+                                           'reklamacji')
                     return render(request,
                                   template_name='book/complaint/add.html',
                                   context={'title': 'Reklamacje',
@@ -123,7 +133,8 @@ def add_complaint(request):
             if complaint.end_date or complaint.status == 'close':
                 for f in faults:
                     if f.status == 'open':
-                        messages.info(request, 'Aby zamknąć reklamację wyszystekie usterki muszą mieć status zamknięty i datę '
+                        messages.error(request, 'Aby zamknąć reklamację wyszystekie usterki muszą mieć status zamknięty '
+                                             'i datę '
                                       'zakończenia')
                         return render(request,
                                       template_name='book/complaint/add.html',
