@@ -214,7 +214,7 @@ class Fault(models.Model):
         )),
         ('układ pneumatyczny', 'Układ pneumatyczny'),
     )
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=40)
     category = models.CharField(max_length=50,
                                 db_index=True,
                                 choices=category_choices)

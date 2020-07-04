@@ -703,31 +703,31 @@ class EditFaultFormTestCase(TestCase):
         self.assertTemplateUsed(response, 'book/fault/edit.html')
         self.assertContains(response, 'Nie wprowadzono żadnych zmian')
 
-    # def test_valid_edit_fault_long_name(self):
-    #     client = Owner.objects.first()
-    #     vehicle = Vehicle.objects.first()
-    #     complaint = Complaint.objects.first()
-    #     fault = Fault.objects.get(zr_number='123456')
-    #     data = {
-    #         'name': 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo',
-    #         'category': fault.category,
-    #         'description': fault.description,
-    #         'actions': fault.actions,
-    #         'comments': fault.comments,
-    #         'zr_number': fault.zr_number,
-    #         'status': fault.status,
-    #         'end_date': fault.end_date,
-    #         'entry_date': fault.entry_date
-    #     }
-    #
-    #     response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
-    #                                 data=data,
-    #                                 follow=True)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertTemplateUsed(response, 'book/fault/list.html')
-    #     self.assertContains(response, 'Zmiany zapisano pomyślnie')
-    #     fault = Fault.objects.get(zr_number='123456')
-    #     self.assertEqual(fault.name, 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo')
+    def test_valid_edit_fault_long_name(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo',
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(zr_number='123456')
+        self.assertEqual(fault.name, 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo')
 
     def test_invalid_edit_fault_end_date_is_before_complaint_entry_date(self):
         Owner.objects.first()
