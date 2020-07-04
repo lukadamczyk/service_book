@@ -1,7 +1,7 @@
 import datetime
 
 from django.test import TestCase
-from .forms import AddComplaintForm, EditComplaintForm, AddFaultForm
+from .forms import AddComplaintForm, EditComplaintForm, AddFaultForm, EditFaultForm
 from .models import Vehicle, Trolleys, Owner
 from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault
 
@@ -47,6 +47,21 @@ def create_edit_form(doc, entry_date, end_date, status, client, vehicle):
         'vehicle': vehicle
     }
     edit_form = EditComplaintForm(data)
+    return edit_form
+
+def create_edit_fault_form(name, category, description, action, comments, zr, status, end_date, need):
+    data = {
+        'name': name,
+        'category': category,
+        'description': description,
+        'actions': action,
+        'comments': comments,
+        'zr_number': zr,
+        'status': status,
+        'end_date': end_date,
+        'need': need
+    }
+    edit_form = EditFaultForm(data)
     return edit_form
 
 class AddComplainFormTestCase(TestCase):
@@ -231,6 +246,33 @@ class EditComplaintFormTestCase(TestCase):
         self.assertEqual(form.errors, {'__all__': ['Data zamknięcia reklamacji nie może być poźniejsza niż {}'.format(
             datetime.date.today())]})
 
+
+class EditFaultFormTestCase(TestCase):
+    def setUp(self):
+        owner = create_owner()
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, '001', 'SA132', 'sa132-001')
+        complaint = create_complaint(vehicle=vehicle, client=owner)
+
+    def test_valid_edit_fault_form(self):
+        form = create_edit_fault_form('fault', 'silnik', 'description', '', 'comments', '123456', 'open', '', '')
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_edit_fault_zr(self):
+        form = create_edit_fault_form('fault', 'silnik', 'description', '', 'comments', '12345', 'open', '', '')
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Podaj właściwy numer ZR (6 cyfr)']})
+
+    def test_invalid_edit_fault_form_status_close_without_end_date(self):
+        form = create_edit_fault_form('fault', 'silnik', 'description', '', 'comments', '123456', 'close', '', '')
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Podaj datę zakończenia usterki']})
+
+    def test_invalid_edit_fault_form_status_open_with_end_date(self):
+        form = create_edit_fault_form('fault', 'silnik', 'description', '', 'comments', '123456', 'open',
+                                      datetime.date(2020, 4, 23), '')
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors, {'__all__': ['Nie można podać daty zakończnia usterki przy otwarty statusie']})
 
 
 
