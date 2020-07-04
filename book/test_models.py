@@ -95,7 +95,7 @@ class VehicleTestCase(TestCase):
 
     def test_get_full_name(self):
         vehicle = Vehicle.objects.get(number='007')
-        self.assertEqual(vehicle.get_full_name(), 'SA132-007')
+        self.assertEqual(vehicle.get_full_name, 'SA132-007')
 
     def test_is_warrenty(self):
         vehicle = Vehicle.objects.get(number='007')
