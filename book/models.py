@@ -91,6 +91,7 @@ class Vehicle(models.Model):
     def __str__(self):
         return 'Pojazd: {}-{}'.format(self.vehicle_type, self.number)
 
+    @property
     def get_full_name(self):
         return '{}-{}'.format(self.vehicle_type, self.number)
 
