@@ -187,7 +187,7 @@ class NumberOfFaults(forms.Form):
                                 label='Liczba usterek')
 
 
-class EditFaultForm(forms.ModelForm):
+class EditFaultForm(AddFaultForm):
 
     def __init__(self, *args, **kwargs):
         super(EditFaultForm, self).__init__(*args, **kwargs)
@@ -197,19 +197,9 @@ class EditFaultForm(forms.ModelForm):
         self.fields['category'].required = False
         self.fields['description'].required = False
 
-    class Meta:
+    class Meta(AddFaultForm.Meta):
         model = Fault
         exclude = ['complaint', 'vehicle', 'entry_date']
-        labels = {
-            'name': 'Usterka',
-            'category': 'Kategoria',
-            'description': 'Opis',
-            'actions': 'Podjęte działania',
-            'comments': 'Uwagi',
-            'zr_number': 'Numer ZR',
-            'end_date': 'Data zakończenia',
-            'need': 'Potrzeby'
-        }
 
 
 class EditComplaintForm(forms.ModelForm):

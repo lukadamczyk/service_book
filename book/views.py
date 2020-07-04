@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.contrib import messages
 
-import xlwt
+import xlwt, datetime
 
 def paginator_get_page(models_list, num, page):
     paginator = Paginator(models_list, num)
@@ -128,6 +128,7 @@ def add_complaint(request):
                                   context={'title': 'Reklamacje',
                                            'form_complaint': form_complaint,
                                            'formset_fault': formset_fault})
+
                 faults.append(form)
 
             if complaint.end_date or complaint.status == 'close':
@@ -204,8 +205,78 @@ def edit_fault(request, id):
         form = EditFaultForm(instance=fault,
                              data=request.POST)
         if form.is_valid():
-            form.save()
-        return redirect(reverse('book:fault_list'))
+            fault = get_object_or_404(Fault, id=id)
+            cd = form.cleaned_data
+            if cd['name'] == fault.name and cd['category'] == fault.category and cd['description'] == \
+                    fault.description and cd['actions'] == fault.actions and cd['comments'] == fault.comments and cd[
+                'zr_number'] == fault.zr_number and cd['status'] == fault.status and cd['end_date'] == fault.end_date\
+                    and cd['need'] == fault.need:
+                messages.error(request, 'Nie wprowadzono żadnych zmian')
+                return render(request,
+                              template_name='book/fault/edit.html',
+                              context={'title': 'Usterka',
+                                       'fault': fault,
+                                       'form': form})
+            if cd['name'] and cd['name'] != fault.name:
+                fault.name = cd['name']
+            if cd['category'] and cd['category'] != fault.category:
+                fault.category = cd['category']
+            if cd['description'] and cd['description'] != fault.description:
+                fault.description = cd['description']
+            if cd['actions'] and cd['actions'] != fault.actions:
+                fault.actions = cd['actions']
+            if cd['comments'] and cd['comments'] != fault.comments:
+                fault.comments = cd['comments']
+            if cd['zr_number'] and cd['zr_number'] != fault.zr_number:
+                fault.zr_number = cd['zr_number']
+            if cd['status'] and cd['status'] != fault.status:
+                if cd['status'] == 'close' and cd['end_date'] < fault.complaint.entry_date:
+                    messages.error(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                                           'wpłynięcia reklamacji {}'.format(fault.complaint.entry_date.strftime(
+                        '%d/%m/%Y')))
+                    return render(request,
+                                  template_name='book/fault/edit.html',
+                                  context={'title': 'Usterka',
+                                           'fault': fault,
+                                           'form': form})
+                if cd['status'] == 'close' and cd['end_date'] > datetime.date.today():
+                    messages.error(request, 'Data zakończenia usterki nie może być późniejsza od daty '
+                                           'dzisiejszj {}'.format(datetime.date.today().strftime(
+            '%d/%m/%Y')))
+                    return render(request,
+                                  template_name='book/fault/edit.html',
+                                  context={'title': 'Usterka',
+                                           'fault': fault,
+                                           'form': form})
+
+                fault.status = cd['status']
+                fault.end_date = cd['end_date']
+            if cd['end_date'] and cd['end_date'] != fault.end_date:
+                if cd['end_date'] < fault.complaint.entry_date:
+                    messages.error(request, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                                            'wpłynięcia reklamacji {}'.format(fault.complaint.entry_date.strftime(
+                        '%d/%m/%Y')))
+                    return render(request,
+                                  template_name='book/fault/edit.html',
+                                  context={'title': 'Usterka',
+                                           'fault': fault,
+                                           'form': form})
+                if cd['end_date'] > datetime.date.today():
+                    messages.error(request, 'Data zakończenia usterki nie może być późniejsza od daty dzisiejszej {}'.format(datetime.date.today().strftime(
+            '%d/%m/%Y')))
+                    return render(request,
+                                  template_name='book/fault/edit.html',
+                                  context={'title': 'Usterka',
+                                           'fault': fault,
+                                           'form': form})
+                fault.end_date = cd['end_date']
+            if cd['need'] and cd['need'] != fault.need:
+                fault.need = cd['need']
+
+            fault.save()
+            messages.success(request, 'Zmiany zapisano pomyślnie')
+            return redirect(reverse('book:fault_list'))
+        messages.error(request, 'Popraw wprowadzone dane')
     else:
         form = EditFaultForm(instance=fault)
     return render(request,
