@@ -450,3 +450,398 @@ class EditComplaintFormTestCase(TestCase):
         self.assertContains(response, 'Nie wprowadzono żadnych zmian')
 
 
+class EditFaultFormTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        complaint = create_complaint(vehicle, owner, doc_number='reklamacja 32')
+        fault = create_fault(complaint, vehicle)
+        fault.status = 'close'
+        fault.end_date = datetime.date(2019, 2, 2)
+        fault.save()
+
+    def test_valid_edit_fault_changed_description(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': 'test description',
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.description, 'test description')
+
+    def test_valid_edit_fault_changed_name(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': 'usterka12',
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.name, 'usterka12')
+
+    def test_valid_edit_fault_changed_category(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': 'przekładnia',
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.category, 'przekładnia')
+
+    def test_valid_edit_fault_changed_actions(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': 'test12',
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.actions, 'test12')
+
+    def test_valid_edit_fault_changed_comments(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': 'comment',
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.comments, 'comment')
+
+    def test_valid_edit_fault_changed_zr(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': '523124',
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.zr_number, '523124')
+
+    def test_valid_edit_fault_changed_status_to_open(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'open',
+            'end_date': '',
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.status, 'open')
+        self.assertEqual(fault.end_date, None)
+
+    def test_valid_edit_fault_changed_status_to_close(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        fault.status = 'open'
+        fault.end_date = None
+        fault.save()
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'close',
+            'end_date': datetime.date(2019, 7, 1),
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault.objects.get(id=fault.id)
+        self.assertEqual(fault.status, 'close')
+        self.assertEqual(fault.end_date, datetime.date(2019, 7, 1))
+
+    def test_invalid_edit_fault_without_changes(self):
+        client = Owner.objects.first()
+        vehicle = Vehicle.objects.first()
+        complaint = Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': fault.status,
+            'end_date': fault.end_date,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/edit.html')
+        self.assertContains(response, 'Nie wprowadzono żadnych zmian')
+
+    # def test_valid_edit_fault_long_name(self):
+    #     client = Owner.objects.first()
+    #     vehicle = Vehicle.objects.first()
+    #     complaint = Complaint.objects.first()
+    #     fault = Fault.objects.get(zr_number='123456')
+    #     data = {
+    #         'name': 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo',
+    #         'category': fault.category,
+    #         'description': fault.description,
+    #         'actions': fault.actions,
+    #         'comments': fault.comments,
+    #         'zr_number': fault.zr_number,
+    #         'status': fault.status,
+    #         'end_date': fault.end_date,
+    #         'entry_date': fault.entry_date
+    #     }
+    #
+    #     response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+    #                                 data=data,
+    #                                 follow=True)
+    #     self.assertEqual(response.status_code, 200)
+    #     self.assertTemplateUsed(response, 'book/fault/list.html')
+    #     self.assertContains(response, 'Zmiany zapisano pomyślnie')
+    #     fault = Fault.objects.get(zr_number='123456')
+    #     self.assertEqual(fault.name, 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo')
+
+    def test_invalid_edit_fault_end_date_is_before_complaint_entry_date(self):
+        Owner.objects.first()
+        Vehicle.objects.first()
+        Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        fault.status = 'open'
+        fault.save()
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'close',
+            'end_date': datetime.date(2018, 1, 27),
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/edit.html')
+        fault = Fault.objects.get(zr_number='123456')
+        self.assertContains(response, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                                           'wpłynięcia reklamacji {}'.format(fault.complaint.entry_date.strftime(
+            '%d/%m/%Y')))
+
+    def test_invalid_edit_fault_end_date_is_too_late_complaint_entry_date(self):
+        Owner.objects.first()
+        Vehicle.objects.first()
+        Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        fault.status = 'open'
+        fault.save()
+        day = datetime.timedelta(1)
+        tomorrow = datetime.date.today() + day
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'close',
+            'end_date': tomorrow,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/edit.html')
+        self.assertContains(response, 'Data zakończenia usterki nie może być późniejsza od daty '
+                                           'dzisiejszj {}'.format(datetime.date.today().strftime(
+            '%d/%m/%Y')))
+
+    def test_invalid_edit_fault_end_date_is_before_complaint_entry_date_close_status(self):
+        Owner.objects.first()
+        Vehicle.objects.first()
+        Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'close',
+            'end_date': datetime.date(2018, 1, 27),
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/edit.html')
+        fault = Fault.objects.get(zr_number='123456')
+        self.assertContains(response, 'Data zakończenia usterki nie może być wcześniejsza niż data '
+                                           'wpłynięcia reklamacji {}'.format(fault.complaint.entry_date.strftime(
+            '%d/%m/%Y')))
+
+    def test_invalid_edit_fault_end_date_is_too_late_complaint_entry_date_close_status(self):
+        Owner.objects.first()
+        Vehicle.objects.first()
+        Complaint.objects.first()
+        fault = Fault.objects.get(zr_number='123456')
+        day = datetime.timedelta(1)
+        tomorrow = datetime.date.today() + day
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'zr_number': fault.zr_number,
+            'status': 'close',
+            'end_date': tomorrow,
+            'entry_date': fault.entry_date
+        }
+
+        response = self.client.post(reverse('book:edit_fault', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault/edit.html')
+        self.assertContains(response, 'Data zakończenia usterki nie może być późniejsza od daty dzisiejszej '
+                                           '{}'.format(datetime.date.today().strftime(
+            '%d/%m/%Y')))
+
+
+
