@@ -53,7 +53,7 @@ def create_complaint(vehicle, client, updated=None, doc_number='KW 123',
                                          vehicle=vehicle)
     return complaint
 
-def create_fault(complaint, vehicle, name='usterka', zr_number='12345', category='silnik', status='open',
+def create_fault(complaint, vehicle, name='usterka', zr_number='123456', category='silnik', status='open',
                  description='test',
                  actions='actions',
                  comments='none',
@@ -148,10 +148,10 @@ class FautTestCase(TestCase):
         create_fault(complaint, vehicle)
 
     def test_fault_model(self):
-        fault = Fault.objects.get(zr_number='12345')
+        fault = Fault.objects.get(zr_number='123456')
         complaint = Complaint.objects.first()
         self.assertTrue(isinstance(fault, Fault))
-        self.assertEqual(fault.zr_number, '12345')
+        self.assertEqual(fault.zr_number, '123456')
         self.assertEqual(fault.end_date, None)
         self.assertEqual(fault.complaint, complaint)
 
