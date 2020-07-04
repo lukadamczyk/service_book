@@ -73,7 +73,7 @@ def complaint_list(request):
 @login_required()
 def complaint_detail(request, id):
     complaint = get_object_or_404(Complaint, id=id)
-    title = complaint.vehicle.get_full_name()
+    title = complaint.vehicle.get_full_name
     return render(request,
                   template_name='book/complaint/detail.html',
                   context={'title': title,
@@ -82,7 +82,7 @@ def complaint_detail(request, id):
 @login_required()
 def fault_detail(request, id):
     fault = get_object_or_404(Fault, id=id)
-    title = fault.vehicle.get_full_name()
+    title = fault.vehicle.get_full_name
     return render(request,
                   template_name='book/fault/detail.html',
                   context={'title': title,
@@ -412,7 +412,7 @@ def export_complaints_xls(request):
             if col_num == 0:
                 ws.write(row_num, col_num, row.document_number, style)
             if col_num == 1:
-                ws.write(row_num, col_num, row.vehicle.get_full_name(), style)
+                ws.write(row_num, col_num, row.vehicle.get_full_name, style)
             if col_num == 2:
                 date = '-'.join((str(row.entry_date.day), str(row.entry_date.month), str(row.entry_date.year)))
                 ws.write(row_num, col_num, date, style)
