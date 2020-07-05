@@ -174,6 +174,11 @@ class Complaint(models.Model):
     class Meta:
         ordering = ('-published_date',)
 
+    @property
+    def day_counter(self):
+        days = datetime.date.today() - self.entry_date
+        return days.days
+
 
 class Fault(models.Model):
     status_choices = (
