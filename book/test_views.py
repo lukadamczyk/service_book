@@ -166,7 +166,7 @@ class FaultDetailViewTestCase(TestCase):
         self.assertTemplateUsed(response, 'book/fault/detail.html')
         self.assertEqual(response.context['title'], 'SA132-004')
         self.assertEqual(response.context['fault'], fault)
-        self.assertContains(response, 'Usterka: usterka drzwi')
+        self.assertContains(response, 'usterka drzwi')
 
 
 class FaultListViewTestCase(TestCase):

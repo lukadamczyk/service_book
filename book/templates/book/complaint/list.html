@@ -1,6 +1,7 @@
 {% extends "book/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load mathfilters %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
@@ -35,7 +36,7 @@
     <tbody>
       {% for complaint in complaints %}
       <tr>
-        <th scope="row" class="text-center">{{ forloop.counter }}</th>
+        <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
         {% if complaint.status == 'close' %}
           <td class="text-center"><a class="text-success" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
         {% else %}
