@@ -33,15 +33,15 @@
           <td>{{ complaint.get_status_display }}</td>
         </tr>
         {% if complaint.status == 'close' %}
-        <tr>
-          <th scope="row">Data zamknięcia</th>
-          <td>{{ complaint.end_date|date:'d-m-Y' }}</td>
-        </tr>
+          <tr>
+            <th scope="row">Data zamknięcia</th>
+            <td>{{ complaint.end_date|date:'d-m-Y' }}</td>
+          </tr>
+        {% endif %}
         <tr>
           <th scope="row"><a href="{% url 'book:edit_complaint' complaint.id %}">Edytuj reklamację</a></th>
           <td></td>
         </tr>
-        {% endif %}
       </tbody>
     </table>
     {% endif %}
