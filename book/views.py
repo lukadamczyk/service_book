@@ -49,10 +49,25 @@ def vehicle_detail(request, slug):
 @login_required()
 def complaint_list(request):
     complaints_list = Complaint.objects.all()
+
     page = request.GET.get('page')
+    pages = page_counter(int(page)) if page else 0
+
     form = FilterComplaintsForm(request.GET)
     form_add_complaint = NumberOfFaults()
-    pages = page_counter(int(page)) if page else 0
+
+    to_close = request.GET.get('to_close')
+    if to_close == '1':
+        complaints_list = complaints_list.filter(status='open', complaint_faults__status='close').exclude(
+            complaint_faults__status='open')
+        complaints = paginator_get_page(complaints_list, 10, page)
+        return render(request,
+                      template_name='book/complaint/list.html',
+                      context={'title': 'Reklamacje',
+                               'complaints': complaints,
+                               'form': form,
+                               'form_add_complaint': form_add_complaint,
+                               'pages': pages})
     if form.is_valid():
         cd = form.cleaned_data
         if cd['status']:
@@ -71,7 +86,6 @@ def complaint_list(request):
                                'form': form,
                                'form_add_complaint': form_add_complaint,
                                'pages': pages})
-    complaints = paginator_get_page(complaints_list, 10, page)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
