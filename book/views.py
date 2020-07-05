@@ -7,6 +7,9 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 from django.contrib import messages
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.contrib.auth.models import User
 
 import xlwt, datetime
 
@@ -20,6 +23,17 @@ def page_counter(page):
     else:
         page = 0
     return page
+
+def email(tab, sub, body):
+    subject = sub
+    email_from = settings.EMAIL_HOST_USER
+    recipient_list = tab
+
+    email = EmailMessage(subject=subject, body=body, from_email=email_from, to=recipient_list)
+    email.content_subtype = 'html'
+    email.send()
+    return True
+
 
 @login_required()
 def home(request):
@@ -49,8 +63,9 @@ def vehicle_detail(request, slug):
 @login_required()
 def complaint_list(request):
     complaints_list = Complaint.objects.all()
-
     page = request.GET.get('page')
+    complaints = paginator_get_page(complaints_list, 10, page)
+
     pages = page_counter(int(page)) if page else 0
 
     form = FilterComplaintsForm(request.GET)
@@ -172,13 +187,25 @@ def add_complaint(request):
             complaint.author = request.user
             complaint.save()
 
+            email_faults = ''
             for f in faults:
                 # f.save(commit=False)
                 f.complaint = complaint
                 f.vehicle = complaint.vehicle
                 f.entry_date = complaint.entry_date
                 f.save()
-
+                email_faults += '<li>{}</li>'.format(f.name)
+            body = '''<html lang="pl"><head><meta charset="UTF-8"><title>Title</title></head><body><h3>%s %s</h3>
+                    <p>Nr reklamacji: %s<ul>Lista usterek:%s</ul><a 
+                    href="%s/complaint/%s/">Więcej informacji</a></p></body></html>
+                    ''' % (complaint.vehicle.owner.name, complaint.vehicle.get_full_name, complaint.document_number, email_faults,
+              settings.HOST_IP, complaint.id)
+            users_email = []
+            users = User.objects.all()
+            for user in users:
+                users_email.append(user.email)
+            sub = 'Wpłyneła nowa reklamacja'
+            email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
         else:
