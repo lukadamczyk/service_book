@@ -4,6 +4,7 @@ from .test_models import create_vehicle, create_owner, create_trolleys, create_c
 from .models import Owner, Vehicle, Complaint, Fault, Inspection
 from django.contrib.auth.models import User
 from .forms import FilterComplaintsForm, FilterFaultForm
+from django.core import mail
 
 import datetime
 
@@ -319,6 +320,8 @@ class AddComplaintView(TestCase):
         user = User.objects.get(username='tom')
         self.assertEqual(complaint.author, user)
         self.assertEqual(complaint.published_date.date(), datetime.datetime.today().date())
+        users = User.objects.all()
+        self.assertEqual(len(mail.outbox), len(users))
 
     def test_invalid_add_complaint_blank_fault(self):
         client = Owner.objects.first()
