@@ -53,7 +53,6 @@ def complaint_list(request):
     form = FilterComplaintsForm(request.GET)
     form_add_complaint = NumberOfFaults()
     pages = page_counter(int(page)) if page else 0
-    messages.info(request, 'pages: {}'.format(pages))
     if form.is_valid():
         cd = form.cleaned_data
         if cd['status']:
@@ -184,6 +183,7 @@ def fault_list(request):
     faults_list = Fault.objects.all()
     page = request.GET.get('page')
     form = FilterFaultForm(request.GET)
+    pages = page_counter(int(page)) if page else 0
     if form.is_valid():
         cd = form.cleaned_data
         if cd['status']:
@@ -201,13 +201,15 @@ def fault_list(request):
                       template_name='book/fault/list.html',
                       context={'title': 'Usterki',
                                'faults': faults,
-                               'form': form})
+                               'form': form,
+                               'pages': pages})
     faults = paginator_get_page(faults_list, 10, page)
     return render(request,
                   template_name='book/fault/list.html',
                   context={'title': 'Usterki',
                            'faults': faults,
-                           'form': form})
+                           'form': form,
+                           'pages': pages})
 
 @login_required()
 def edit_fault(request, id):

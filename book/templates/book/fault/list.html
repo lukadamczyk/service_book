@@ -9,7 +9,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
 {{ form.media }}
-<div class="container">
+<div class="container pb-3">
   {% if faults %}
   <form action="." method="GET" class="form-inline">
     <!-- {% csrf_token %} -->
@@ -32,7 +32,7 @@
     <tbody>
       {% for fault in faults %}
       <tr>
-        <th scope="row" class="text-center">{{ forloop.counter }}</th>
+        <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
         <td><a href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
         <td>{{ fault.zr_number|default:"" }}</td>
         <td>{{ fault.vehicle.get_full_name }}</td>
@@ -44,6 +44,16 @@
     </tbody>
     {% endfor %}
   </table>
+  {% endif %}
+  <span class="mr-4">Strona {{ faults.number }}</span>
+  {% if faults.has_previous %}
+    {% if faults.has_previous != 1 %}
+      <a href="?page=1">1</a>
+    {% endif %}
+  <a class="btn btn-dark ml-1" href="?page={{ faults.previous_page_number }}" class=".nav-link" role="button">{{ faults.previous_page_number }}</a>
+  {% endif %}
+  {% if faults.has_next %}
+    <a class="btn btn-dark ml-1" href="?page={{ faults.next_page_number }}" role="button">{{ faults.next_page_number }}</a>
   {% endif %}
 </div>
 {% endblock %}
