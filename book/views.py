@@ -198,13 +198,13 @@ def add_complaint(request):
             body = '''<html lang="pl"><head><meta charset="UTF-8"><title>Title</title></head><body><h3>%s %s</h3>
                     <p>Nr reklamacji: %s<br>Data wpłynięnia: %s<ul>Lista usterek:%s</ul><a 
                     href="%s/complaint/%s/">Więcej informacji</a></p></body></html>
-                    ''' % (complaint.vehicle.owner.name, complaint.vehicle.get_full_name, complaint.document_number, email_faults,
-              settings.HOST_IP, complaint.id)
+                    ''' % (complaint.vehicle.owner.name, complaint.vehicle.get_full_name, complaint.document_number,
+                           complaint.entry_date.strftime('%d/%m/%Y'), email_faults, settings.HOST_IP, complaint.id)
             users_email = []
             users = User.objects.all()
             for user in users:
                 users_email.append(user.email)
-            sub = 'Wpłyneła nowa reklamacja'
+            sub = 'Dodano nową reklamację'
             email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
