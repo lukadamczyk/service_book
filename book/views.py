@@ -196,7 +196,7 @@ def add_complaint(request):
                 f.save()
                 email_faults += '<li>{}</li>'.format(f.name)
             body = '''<html lang="pl"><head><meta charset="UTF-8"><title>Title</title></head><body><h3>%s %s</h3>
-                    <p>Nr reklamacji: %s<ul>Lista usterek:%s</ul><a 
+                    <p>Nr reklamacji: %s<br>Data wpłynięnia: %s<ul>Lista usterek:%s</ul><a 
                     href="%s/complaint/%s/">Więcej informacji</a></p></body></html>
                     ''' % (complaint.vehicle.owner.name, complaint.vehicle.get_full_name, complaint.document_number, email_faults,
               settings.HOST_IP, complaint.id)
