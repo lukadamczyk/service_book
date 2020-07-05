@@ -1,6 +1,7 @@
 {% extends "book/base.html" %}
 
 {% load crispy_forms_tags %}
+{% load mathfilters %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
@@ -9,7 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
 {{ form.media }}
-<div class="container">
+<div class="container pb-3">
   {% if complaints %}
   <form action="." method="GET" class="form-inline">
     {% csrf_token %}
@@ -35,7 +36,7 @@
     <tbody>
       {% for complaint in complaints %}
       <tr>
-        <th scope="row" class="text-center">{{ forloop.counter }}</th>
+        <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
         {% if complaint.status == 'close' %}
           <td class="text-center"><a class="text-success" href="{% url 'book:complaint_detail' complaint.id %}">{{ complaint.document_number }}</a></td>
         {% else %}
@@ -55,15 +56,15 @@
     </tbody>
     {% endfor %}
   </table>
-  Strona {{ complaints.number }}
+  <span class="mr-4">Strona {{ complaints.number }}</span>
   {% if complaints.has_previous %}
-  {% if complaints.has_previous != 1 %}
-  <a href="?page=1">1</a>
-  {% endif %}
-  <a href="?page={{ complaints.previous_page_number }}">
-    <<</a> {% endif %} {% if complaints.has_next %} <a href="?page={{ complaints.next_page_number }}">>>
-  </a>
-  {% endif %}
+    {% if complaints.has_previous != 1 %}
+      <a href="?page=1">1</a>
+    {% endif %}
+      <a class="btn btn-dark ml-1" href="?page={{ complaints.previous_page_number }}" role="button">{{ complaints.previous_page_number }}</a>
+    {% endif %} {% if complaints.has_next %}
+      <a class="btn btn-dark ml-1" href="?page={{ complaints.next_page_number }}" role="button">{{ complaints.next_page_number }}</a>
+    {% endif %}
   {% endif %}
 </div>
 {% endblock %}
