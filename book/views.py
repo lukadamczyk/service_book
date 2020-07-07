@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordChangeView
 
 import xlwt, datetime, magic
 
@@ -34,6 +35,15 @@ def email(tab, sub, body):
     email.content_subtype = 'html'
     email.send()
     return True
+
+class CustomPasswordChangeView(PasswordChangeView):
+    template_name = 'registration/change_password.html'
+
+    success_url = '/'
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Nowe hasło zostało zapisane')
+        return super().form_valid(form)
 
 
 @login_required()
