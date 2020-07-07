@@ -363,13 +363,39 @@ def edit_complaint(request, id):
     complaint = get_object_or_404(Complaint, id=id)
     if request.method == 'POST':
         form = EditComplaintForm(request.POST,
+                                 request.FILES,
                                  instance=complaint)
         if form.is_valid():
             complaint = get_object_or_404(Complaint, id=id)
             cd = form.cleaned_data
+            if 'file_doc' in request.FILES:
+                file_doc = True
+                file = request.FILES['file_doc']
+                filetype = magic.from_buffer(file.read())
+                if not 'PDF' in filetype:
+                    messages.error(request, 'Można dodawać tylko pliki PDF')
+                    return render(request,
+                                  template_name='book/complaint/edit.html',
+                                  context={'title': 'Usterka',
+                                           'complaint': complaint,
+                                           'form': form})
+                if complaint.files_complaint:
+                    name = request.FILES['file_doc'].name
+                    file_name = 'complaint_{}/{}'.format(complaint.id, name)
+                    for f in complaint.files_complaint.all():
+                        if file_name == f.file_document.name:
+                            messages.error(request, 'Załączony plik o takiej nazwie już istnieje')
+                            return render(request,
+                                          template_name='book/complaint/edit.html',
+                                          context={'title': 'Usterka',
+                                                   'complaint': complaint,
+                                                   'form': form})
+            else:
+                file_doc = False
+
             if cd['document_number'] == complaint.document_number and cd['entry_date'] == complaint.entry_date and \
                     cd['end_date'] == complaint.end_date and cd['status'] == complaint.status and cd['vehicle'] == \
-                    complaint.vehicle and complaint.status:
+                    complaint.vehicle and complaint.status and not file_doc:
                 messages.info(request, 'Nie wprowadzono żadnych zmian')
                 return render(request,
                               template_name='book/complaint/edit.html',
@@ -394,6 +420,9 @@ def edit_complaint(request, id):
                 complaint.client = cd['vehicle'].owner
 
             complaint.save()
+            if file_doc:
+                file_document = File(complaint=complaint, file_document=request.FILES['file_doc'])
+                file_document.save()
             messages.success(request, 'Zmiany zapisano pomyśnnie')
             return redirect(reverse('book:complaint_list'))
         messages.error(request, 'Popraw wprowadzone dane')
