@@ -220,10 +220,11 @@ def add_complaint(request):
                            complaint.entry_date.strftime('%d/%m/%Y'), email_faults, settings.HOST_IP, complaint.id)
             users_email = []
             users = User.objects.all()
-            for user in users:
-                users_email.append(user.email)
-            sub = 'Dodano nową reklamację'
-            email(users_email, sub, body)
+            if len(users) > 0:
+                for user in users:
+                    users_email.append(user.email)
+                sub = 'Dodano nową reklamację'
+                email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
         else:
