@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
 
-import datetime
+import datetime, os
 
 vehicle_choices = (
         ('SA132', 'SA132'),
@@ -11,6 +11,10 @@ vehicle_choices = (
         ('SA134', 'SA134'),
         ('SA139', 'SA139'),
 )
+
+
+def user_directory_path(instance, file_name):
+    return 'complaint_{0}/{1}'.format(instance.complaint.id, file_name)
 
 
 class Owner(models.Model):
