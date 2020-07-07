@@ -68,6 +68,9 @@ class FilterFaultForm(forms.ModelForm):
 
 
 class AddComplaintForm(forms.ModelForm):
+    file_doc = forms.FileField(required=False,
+                               allow_empty_file=True,
+                               label='Załącznik')
 
     class Meta:
         model = Complaint
