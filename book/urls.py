@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 app_name = 'book'
 urlpatterns = [
@@ -16,4 +18,4 @@ urlpatterns = [
     path('inspection/', views.inspection_list, name='inspection_list'),
     path('inspection/<int:id>/', views.inspection_detail, name='inspection_detail'),
     path('export/', views.export_complaints_xls, name='export_complaints_xls'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
