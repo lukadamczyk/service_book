@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
-from .models import Owner, Vehicle, Complaint, Fault, Inspection
+from .models import Owner, Vehicle, Complaint, Fault, Inspection, File
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, \
     EditFaultForm, EditComplaintForm
@@ -11,7 +11,8 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 from django.contrib.auth.models import User
 
-import xlwt, datetime
+import xlwt, datetime, magic
+
 
 def paginator_get_page(models_list, num, page):
     paginator = Paginator(models_list, num)
@@ -135,7 +136,7 @@ def add_complaint(request):
                                       max_num=number_of_faults,
                                       validate_min=True)
     if request.method == 'POST':
-        form_complaint = AddComplaintForm(request.POST)
+        form_complaint = AddComplaintForm(request.POST, request.FILES)
         formset_fault = AddFaultFormSet(request.POST)
         if form_complaint.is_valid() and formset_fault.is_valid():
             complaint = form_complaint.save(commit=False)
@@ -182,10 +183,27 @@ def add_complaint(request):
                                                'form_complaint': form_complaint,
                                                'formset_fault': formset_fault})
 
+            if 'file_doc' in request.FILES:
+                file_doc = True
+                file = request.FILES['file_doc']
+                filetype = magic.from_buffer(file.read())
+                if not 'PDF' in filetype:
+                    messages.error(request, 'Można dodawać tylko pliki PDF')
+                    return render(request,
+                                  template_name='book/complaint/add.html',
+                                  context={'title': 'Reklamacje',
+                                           'form_complaint': form_complaint,
+                                           'formset_fault': formset_fault})
+            else:
+                file_doc = False
+
             complaint = form_complaint.save(commit=False)
             complaint.client = complaint.vehicle.owner
             complaint.author = request.user
             complaint.save()
+            if file_doc:
+                file_document = File(complaint=complaint, file_document=request.FILES['file_doc'])
+                file_document.save()
 
             email_faults = ''
             for f in faults:
