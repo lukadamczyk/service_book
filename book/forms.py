@@ -206,6 +206,9 @@ class EditFaultForm(AddFaultForm):
 
 
 class EditComplaintForm(forms.ModelForm):
+    file_doc = forms.FileField(required=False,
+                               allow_empty_file=True,
+                               label='Załącznik')
 
     def __init__(self, *args, **kwargs):
         super(EditComplaintForm, self).__init__(*args, **kwargs)
