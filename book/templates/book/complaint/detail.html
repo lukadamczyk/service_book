@@ -38,6 +38,14 @@
             <td>{{ complaint.end_date|date:'d-m-Y' }}</td>
           </tr>
         {% endif %}
+        {% if complaint.files_complaint %}
+          {% for f in complaint.files_complaint.all %}
+            <tr>
+              <th scope="row">Załączniki</th>
+              <td><a href="{{ f.get_path }}">{{ f.file_document.url }}</a></td>
+            </tr>
+          {% endfor %}
+        {% endif %}
         <tr>
           <th scope="row"><a href="{% url 'book:edit_complaint' complaint.id %}">Edytuj reklamację</a></th>
           <td></td>

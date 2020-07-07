@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.conf import settings
 
-import datetime
+import datetime, os
 
 vehicle_choices = (
         ('SA132', 'SA132'),
@@ -11,6 +11,10 @@ vehicle_choices = (
         ('SA134', 'SA134'),
         ('SA139', 'SA139'),
 )
+
+
+def user_directory_path(instance, file_name):
+    return 'complaint_{0}/{1}'.format(instance.complaint.id, file_name)
 
 
 class Owner(models.Model):
@@ -178,6 +182,22 @@ class Complaint(models.Model):
     def day_counter(self):
         days = datetime.date.today() - self.entry_date
         return days.days
+
+
+class File(models.Model):
+    complaint = models.ForeignKey(Complaint,
+                                  related_name='files_complaint',
+                                  on_delete=models.CASCADE,
+                                  blank=True,
+                                  null=True
+                                  )
+    file_document = models.FileField(upload_to=user_directory_path,
+                            blank=True,
+                            null=True)
+
+    @property
+    def get_path(self):
+        return os.path.join(settings.MEDIA_ROOT, self.file_document.url)
 
 
 class Fault(models.Model):
