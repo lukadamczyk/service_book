@@ -140,14 +140,18 @@ def fault_detail(request, id):
 
 @login_required()
 def add_complaint(request):
-    number_of_faults = int(request.GET.get('number'))
+    number_of_faults = int(request.GET.get('number', None))
     AddFaultFormSet = formset_factory(AddFaultForm,
                                       extra=number_of_faults,
                                       max_num=number_of_faults,
                                       validate_min=True)
+    if number_of_faults <= 0:
+        messages.error(request, 'Liczba usterek musi być większa od 0')
+        return redirect(reverse('book:complaint_list'))
     if request.method == 'POST':
         form_complaint = AddComplaintForm(request.POST, request.FILES)
         formset_fault = AddFaultFormSet(request.POST)
+        messages.info(request, number_of_faults)
         if form_complaint.is_valid() and formset_fault.is_valid():
             complaint = form_complaint.save(commit=False)
             faults = []
