@@ -129,7 +129,6 @@ def complaint_list(request):
                                'pages': pages,
                                'paginator': paginator,
                                'url_path': url_path})
-    messages.error(request, form.errors)
     complaints = paginator_get_page(complaints_list, 10, page)
     paginator = Paginator(complaints_list, 10)
     return render(request,
@@ -173,7 +172,6 @@ def add_complaint(request):
     if request.method == 'POST':
         form_complaint = AddComplaintForm(request.POST, request.FILES)
         formset_fault = AddFaultFormSet(request.POST)
-        messages.info(request, number_of_faults)
         if form_complaint.is_valid() and formset_fault.is_valid():
             complaint = form_complaint.save(commit=False)
             faults = []
