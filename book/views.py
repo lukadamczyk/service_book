@@ -73,17 +73,22 @@ def vehicle_detail(request, slug):
 
 @login_required()
 def complaint_list(request):
-    complaints_list = Complaint.objects.all()
-    page = request.GET.get('page')
-    complaints = paginator_get_page(complaints_list, 10, page)
-
+    page = request.GET.get('page', None)
     pages = page_counter(int(page)) if page else 0
-
+    complaints_list = Complaint.objects.all()
     form = FilterComplaintsForm(request.GET)
     form_add_complaint = NumberOfFaults()
+    url_path = ''
+    status = request.GET.get('status', '')
+    vehicle = request.GET.get('vehicle', '')
+    date_to = request.GET.get('date_to', '')
+    date_from = request.GET.get('date_from', '')
+    client = request.GET.get('client', '')
+    url_path += '&'+'status='+status+'&vehicle='+vehicle+'&date_to='+date_to+'&date_from='+date_from+'&client='+client
 
     to_close = request.GET.get('to_close')
     if to_close == '1':
+        complaints_list = Complaint.objects.all()
         complaints_list = complaints_list.filter(status='open', complaint_faults__status='close').exclude(
             complaint_faults__status='open')
         complaints = paginator_get_page(complaints_list, 10, page)
@@ -96,29 +101,46 @@ def complaint_list(request):
                                'pages': pages})
     if form.is_valid():
         cd = form.cleaned_data
+        data = {}
         if cd['status']:
             complaints_list = complaints_list.filter(status=cd['status'])
+            data.update({'status': cd['status']})
         if cd['vehicle']:
             complaints_list = complaints_list.filter(vehicle=cd['vehicle'])
+            data.update({'vehicle': cd['vehicle'].id})
         if cd['date_from']:
             complaints_list = complaints_list.filter(entry_date__gte=cd['date_from'])
+            data.update({'date_from': cd['date_from']})
         if cd['date_to']:
             complaints_list = complaints_list.filter(entry_date__lte=cd['date_to'])
+            data.update({'date_to': cd['date_to']})
+        if client:
+            complaints_list = complaints_list.filter(client__id=client)
+            data.update({'client': client})
         complaints = paginator_get_page(complaints_list, 10, page)
+        paginator = Paginator(complaints_list, 10)
+        form = FilterComplaintsForm(data=data)
         return render(request,
                       template_name='book/complaint/list.html',
                       context={'title': 'Reklamacje',
                                'complaints': complaints,
                                'form': form,
                                'form_add_complaint': form_add_complaint,
-                               'pages': pages})
+                               'pages': pages,
+                               'paginator': paginator,
+                               'url_path': url_path})
+    messages.error(request, form.errors)
+    complaints = paginator_get_page(complaints_list, 10, page)
+    paginator = Paginator(complaints_list, 10)
     return render(request,
                   template_name='book/complaint/list.html',
                   context={'title': 'Reklamacje',
                            'complaints': complaints,
                            'form': form,
                            'form_add_complaint': form_add_complaint,
-                           'pages': pages})
+                           'pages': pages,
+                           'paginator': paginator,
+                           'url_path': url_path})
 
 @login_required()
 def complaint_detail(request, id):

@@ -29,12 +29,14 @@ class FilterComplaintsForm(forms.ModelForm):
         self.fields['status'].label = 'Stan'
         self.fields['vehicle'].required = False
         self.fields['vehicle'].label = 'Pojazd'
+        self.fields['client'].required = False
+        self.fields['client'].label = 'Klient'
 
 
 
     class Meta:
         model = Complaint
-        fields = ['status', 'vehicle', 'date_from', 'date_to']
+        fields = ['status', 'vehicle', 'date_from', 'date_to', 'client']
 
 
 class FilterFaultForm(forms.ModelForm):

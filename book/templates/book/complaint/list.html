@@ -2,6 +2,7 @@
 
 {% load crispy_forms_tags %}
 {% load mathfilters %}
+{% load book_extras %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block content %}
@@ -68,14 +69,14 @@
     </tbody>
     {% endfor %}
   </table>
-  <span class="mr-4">Strona {{ complaints.number }}</span>
+  <span class="mr-4">Strona {{ complaints.number }}/{{ paginator.num_pages }}</span>
   {% if complaints.has_previous %}
     {% if complaints.has_previous != 1 %}
       <a href="?page=1">1</a>
     {% endif %}
-      <a class="btn btn-dark ml-1" href="?page={{ complaints.previous_page_number }}" role="button">{{ complaints.previous_page_number }}</a>
+      <a class="btn btn-dark ml-1" href='{{"?page="|addstr:complaints.previous_page_number|addstr:url_path }}' role="button">{{ complaints.previous_page_number }}</a>
     {% endif %} {% if complaints.has_next %}
-      <a class="btn btn-dark ml-1" href="?page={{ complaints.next_page_number }}" role="button">{{ complaints.next_page_number }}</a>
+      <a class="btn btn-dark ml-1" href='{{"?page="|addstr:complaints.next_page_number|addstr:url_path }}'   role="button">{{ complaints.next_page_number }}</a>
     {% endif %}
   {% endif %}
 </div>
