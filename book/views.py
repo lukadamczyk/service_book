@@ -33,7 +33,7 @@ def email(tab, sub, body):
 
     email = EmailMessage(subject=subject, body=body, from_email=email_from, to=recipient_list)
     email.content_subtype = 'html'
-    email.send()
+    email.send(fail_silently=False)
     return True
 
 class CustomPasswordChangeView(PasswordChangeView):
