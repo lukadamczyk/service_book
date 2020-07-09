@@ -34,7 +34,11 @@
       {% for fault in faults %}
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
-        <td><a href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+        {% if fault.status == 'close' %}
+          <td class="text-center"><a class="text-success" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+        {% else %}
+          <td class="text-center"><a class="text-danger" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+        {% endif %}
         <td>{{ fault.zr_number|default:"" }}</td>
         <td>{{ fault.vehicle.get_full_name }}</td>
         <td>{{ fault.entry_date|date:"d-m-Y" }}</td>
