@@ -256,7 +256,8 @@ def add_complaint(request):
             users = User.objects.all()
             if len(users) > 0:
                 for user in users:
-                    users_email.append(user.email)
+                    if user.email:
+                        users_email.append(user.email)
                 sub = 'Dodano nową reklamację'
                 email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
