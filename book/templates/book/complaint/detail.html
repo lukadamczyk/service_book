@@ -65,7 +65,11 @@
           <tbody>
             <tr>
               <th scope="row">Numer ZR</th>
-              <td>{{ fault.zr_number }}</td>
+              {% if fault.zr_number == None %}
+                <td></td>
+              {% else %}
+                <td>{{ fault.zr_number }}</td>
+              {% endif %}
             </tr>
             <tr>
               <th scope="row">Status</th>
