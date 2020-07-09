@@ -278,34 +278,56 @@ def add_complaint(request):
 def fault_list(request):
     faults_list = Fault.objects.all()
     page = request.GET.get('page')
-    form = FilterFaultForm(request.GET)
     pages = page_counter(int(page)) if page else 0
+    form = FilterFaultForm(request.GET)
+    url_path = ''
+    status = request.GET.get('status', '')
+    vehicle = request.GET.get('vehicle', '')
+    date_to = request.GET.get('date_to', '')
+    date_from = request.GET.get('date_from', '')
+    zr_number = request.GET.get('zr_number', '')
+    url_path += '&' + 'status=' + status + '&vehicle=' + vehicle + '&date_to=' + date_to + '&date_from=' + date_from + '&zr_number=' + zr_number
     if form.is_valid():
+        data = {}
         cd = form.cleaned_data
         if cd['status']:
             faults_list = faults_list.filter(status=cd['status'])
+            data.update({'status': cd['status']})
         if cd['vehicle']:
             faults_list = faults_list.filter(vehicle=cd['vehicle'])
+            data.update({'vehicle': cd['vehicle'].id})
         if cd['zr_number']:
             faults_list = faults_list.filter(zr_number=cd['zr_number'])
+            data.update({'zr_number': cd['zr_number']})
         if cd['date_from']:
             faults_list = faults_list.filter(entry_date__gte=cd['date_from'])
+            data.update({'date_from': cd['date_from']})
         if cd['date_to']:
             faults_list = faults_list.filter(entry_date__lte=cd['date_to'])
+            data.update({'date_to': cd['date_to']})
         faults = paginator_get_page(faults_list, 10, page)
+        paginator = Paginator(faults_list, 10)
+        form = FilterFaultForm(data=data)
         return render(request,
                       template_name='book/fault/list.html',
                       context={'title': 'Usterki',
                                'faults': faults,
                                'form': form,
-                               'pages': pages})
+                               'pages': pages,
+                               'paginator': paginator,
+                               'url_path': url_path
+                               })
     faults = paginator_get_page(faults_list, 10, page)
+    paginator = Paginator(faults_list, 10)
     return render(request,
                   template_name='book/fault/list.html',
                   context={'title': 'Usterki',
                            'faults': faults,
                            'form': form,
-                           'pages': pages})
+                           'pages': pages,
+                           'paginator': paginator,
+                           'url_path': url_path
+                           })
 
 @login_required()
 def edit_fault(request, id):
