@@ -265,7 +265,7 @@ def add_complaint(request):
                         users_email.append(user.email)
                 sub = 'Dodano nową reklamację'
                 # linode blocked port for sent email
-                # email(users_email, sub, body)
+                email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
             return redirect(reverse('book:complaint_list'))
         else:
