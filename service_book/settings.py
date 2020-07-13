@@ -34,7 +34,7 @@ SECRET_KEY = config['SECRET_KEY']
 DEBUG = True
 
 HOST_IP = config['HOST_IP']
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [] if DEBUG else [config['WEB'], HOST_IP]
 
 
 # Application definition
