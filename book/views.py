@@ -313,6 +313,11 @@ def fault_list(request):
         faults = paginator_get_page(faults_list, 10, page)
         paginator = Paginator(faults_list, 10)
         form = FilterFaultForm(data=data)
+        if len(faults_list) == 0:
+            messages.info(request, 'Brak wyników w bazie danych')
+            faults_list = Fault.objects.all()
+            faults = paginator_get_page(faults_list, 10, page)
+            paginator = Paginator(faults_list, 10)
         return render(request,
                       template_name='book/fault/list.html',
                       context={'title': 'Usterki',
