@@ -120,6 +120,11 @@ def complaint_list(request):
         complaints = paginator_get_page(complaints_list, 10, page)
         paginator = Paginator(complaints_list, 10)
         form = FilterComplaintsForm(data=data)
+        if len(complaints_list) == 0:
+            messages.info(request, 'Brak wyników w bazie danych')
+            complaints_list = Complaint.objects.all()
+            complaints = paginator_get_page(complaints_list, 10, page)
+            paginator = Paginator(complaints_list, 10)
         return render(request,
                       template_name='book/complaint/list.html',
                       context={'title': 'Reklamacje',
