@@ -92,9 +92,11 @@ WSGI_APPLICATION = 'service_book.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'NAME': config['NAME'],
+        'USER': config['USER'],
+        'PASSWORD': config['PASSWORD'],
         'OPTIONS': {
             'charset': 'utf8',
-            'read_default_file': '/etc/mysql/my.cnf',
         },
         'TEST': {
             'CHARSET': 'utf8mb4',
