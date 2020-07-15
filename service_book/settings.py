@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'book',
     'crispy_forms',
     'bootstrap_datepicker_plus',
-    'mathfilters'
+    'mathfilters',
+    'dbbackup'
 ]
 
 MIDDLEWARE = [
@@ -161,3 +162,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': '/var/backup/django_app/'}
