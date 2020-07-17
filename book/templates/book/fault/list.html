@@ -50,7 +50,9 @@
     {% endfor %}
   </table>
   {% endif %}
-  <span class="mr-4">Strona {{ faults.number }}/{{ paginator.num_pages }}</span>
+  {% if faults|length != 0 %}
+    <span class="mr-4">Strona {{ faults.number }}/{{ paginator.num_pages }}</span>
+  {% endif %}
   {% if faults.has_previous %}
     {% if faults.has_previous != 1 %}
       <a href="?page=1">1</a>
