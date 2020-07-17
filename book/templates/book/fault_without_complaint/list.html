@@ -1,0 +1,64 @@
+{% extends "book/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load book_extras %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" crossorigin="anonymous" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet"/>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous" integrity="sha384-xBuQ/xzmlsLoJpyjoggmTEz8OWUFM0/RC5BsqQBDX2v5cMvDHcMakNTNrHIW2I5f"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" crossorigin="anonymous" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" crossorigin="anonymous" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"></script>
+{{ form.media }}
+<div class="container pb-3">
+  {% if faults %}
+  <form action="." method="GET" class="form-inline">
+    <!-- {% csrf_token %} -->
+    {{ form|crispy }}
+    <input type="submit" value="Szukaj">
+  </form>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col" class="align-middle text-center">Lp</th>
+        <th scope="col" class="align-middle text-center">Usterka</th>
+        <th scope="col" class="align-middle text-center">Nr ZR</th>
+        <th scope="col" class="align-middle text-center">Pojazd</th>
+        <th scope="col" class="align-middle text-center">Data wejścia usterki</th>
+        <th scope="col" class="align-middle text-center">Data usunięcia Usterki</th>
+        <th scope="col" class="align-middle text-center">Opis</th>
+        <th scope="col" class="align-middle text-center">Podjęte działania</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fault in faults %}
+      <tr>
+        <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
+        {% if fault.status == 'close' %}
+          <td class="text-center"><a class="text-success" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+        {% else %}
+          <td class="text-center"><a class="text-danger" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+        {% endif %}
+        <td>{{ fault.zr_number|default:"" }}</td>
+        <td>{{ fault.vehicle.get_full_name }}</td>
+        <td>{{ fault.entry_date|date:"d-m-Y" }}</td>
+        <td>{{ fault.end_date|date:"d-m-Y" }}</td>
+        <td>{{ fault.description }}</td>
+        <td>{{ fault.actions }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+  {% endif %}
+  <span class="mr-4">Strona {{ faults.number }}/{{ paginator.num_pages }}</span>
+  {% if faults.has_previous %}
+    {% if faults.has_previous != 1 %}
+      <a href="?page=1">1</a>
+    {% endif %}
+  <a class="btn btn-dark ml-1" href='{{"?page="|addstr:faults.previous_page_number|addstr:url_path }}' role="button">{{ faults.previous_page_number }}</a>
+  {% endif %}
+  {% if faults.has_next %}
+    <a class="btn btn-dark ml-1" href='{{"?page="|addstr:faults.next_page_number|addstr:url_path }}'   role="button">{{ faults.next_page_number }}</a>
+  {% endif %}
+</div>
+{% endblock %}
