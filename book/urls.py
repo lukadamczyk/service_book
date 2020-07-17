@@ -18,4 +18,5 @@ urlpatterns = [
     path('inspection/', views.inspection_list, name='inspection_list'),
     path('inspection/<int:id>/', views.inspection_detail, name='inspection_detail'),
     path('export/', views.export_complaints_xls, name='export_complaints_xls'),
+    path('fault_without_complaint/', views.fault_without_complaint_list, name='fault_without_complaint_list'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
