@@ -326,7 +326,7 @@ class Fault_without_complaint(models.Model):
                                 null=True)
     need = models.TextField(blank=True)
     vehicle = models.ForeignKey(Vehicle,
-                                related_name='vehicle_faults',
+                                related_name='vehicle_faults_without_complaint',
                                 on_delete=models.CASCADE)
 
     class Meta:
