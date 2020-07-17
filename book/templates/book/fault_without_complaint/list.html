@@ -17,12 +17,13 @@
     {{ form|crispy }}
     <input type="submit" value="Szukaj">
   </form>
+  <a href="{% url 'book:add_fault_without_complaint' %}">Dodaj usterkę</a>
   <table class="table">
     <thead>
       <tr>
         <th scope="col" class="align-middle text-center">Lp</th>
         <th scope="col" class="align-middle text-center">Usterka</th>
-        <th scope="col" class="align-middle text-center">Nr ZR</th>
+        <th scope="col" class="align-middle text-center">Klient</th>
         <th scope="col" class="align-middle text-center">Pojazd</th>
         <th scope="col" class="align-middle text-center">Data wejścia usterki</th>
         <th scope="col" class="align-middle text-center">Data usunięcia Usterki</th>
@@ -35,11 +36,11 @@
       <tr>
         <th scope="row" class="text-center">{{ forloop.counter|add:pages }}</th>
         {% if fault.status == 'close' %}
-          <td class="text-center"><a class="text-success" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+          <td class="text-center"><a class="text-success" href="{% url 'book:fault_without_complaint_detail' fault.id %}">{{ fault.name }}</a></td>
         {% else %}
-          <td class="text-center"><a class="text-danger" href="{% url 'book:fault_detail' fault.id %}">{{ fault.name }}</a></td>
+          <td class="text-center"><a class="text-danger" href="{% url 'book:fault_without_complaint_detail' fault.id %}">{{ fault.name }}</a></td>
         {% endif %}
-        <td>{{ fault.zr_number|default:"" }}</td>
+        <td>{{ fault.vehicle.owner }}</td>
         <td>{{ fault.vehicle.get_full_name }}</td>
         <td>{{ fault.entry_date|date:"d-m-Y" }}</td>
         <td>{{ fault.end_date|date:"d-m-Y" }}</td>
@@ -50,7 +51,9 @@
     {% endfor %}
   </table>
   {% endif %}
-  <span class="mr-4">Strona {{ faults.number }}/{{ paginator.num_pages }}</span>
+  {% if faults|length != 0 %}
+    <span class="mr-4">Strona {{ faults.number }}/{{ paginator.num_pages }}</span>
+  {% endif %}
   {% if faults.has_previous %}
     {% if faults.has_previous != 1 %}
       <a href="?page=1">1</a>
