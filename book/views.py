@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection, File, Fault_without_complaint
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, \
-    EditFaultForm, EditComplaintForm, FilterFaultWithoutComplaintForm
+    EditFaultForm, EditComplaintForm, FilterFaultWithoutComplaintForm, AddFaultWithoutComplaintForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
@@ -253,10 +253,11 @@ def add_complaint(request):
                 f.save()
                 email_faults += '<li>{}</li>'.format(f.name)
             body = '''<html lang="pl"><head><meta charset="UTF-8"><title>Title</title></head><body><h3>%s %s</h3>
-                    <p>Nr reklamacji: %s<br>Data wpłynięnia: %s<ul>Lista usterek:%s</ul><a 
+                    <p>Nr reklamacji: %s<br>Data wpłynięcia: %s<ul>Lista usterek:%s</ul><a 
                     href="%s/complaint/%s/">Więcej informacji</a></p></body></html>
                     ''' % (complaint.vehicle.owner.name, complaint.vehicle.get_full_name, complaint.document_number,
-                           complaint.entry_date.strftime('%d/%m/%Y'), email_faults, settings.HOST_IP, complaint.id)
+                           complaint.entry_date.strftime('%d/%m/%Y'), email_faults, 'www.serwis-szynobusy.pl',
+                           complaint.id)
             users_email = []
             users = User.objects.all()
             if len(users) > 0:
@@ -557,6 +558,59 @@ def fault_without_complaint_list(request):
                            'paginator': paginator,
                            'url_path': url_path
                            })
+
+@login_required()
+def fault_without_complaint_detail(request, id):
+    fault = get_object_or_404(Fault_without_complaint, id=id)
+    title = fault.vehicle.get_full_name
+    return render(request,
+                  template_name='book/fault_without_complaint/detail.html',
+                  context={'title': title,
+                           'fault': fault})
+
+@login_required()
+def add_fault_without_complaint(request):
+    if request.method == 'POST':
+        form = AddFaultWithoutComplaintForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            fault = Fault_without_complaint(name=cd['name'],
+                                            category=cd['category'],
+                                            description=cd['description'],
+                                            actions=cd['actions'],
+                                            comments=cd['comments'],
+                                            status=cd['status'],
+                                            entry_date=cd['entry_date'],
+                                            need=cd['need'],
+                                            vehicle=cd['vehicle'])
+            if cd['end_date'] != '':
+                fault.end_date = cd['end_date']
+            fault.save()
+            body = '''<html lang="pl"><head><meta charset="UTF-8"><title>Title</title></head><body><h3>%s %s</h3>
+                    <p>%s<br>Data wpłynięcia: %s<br>Opis: %s<a 
+                    href="%s/fault_without_complaint/%s/"><br>Więcej informacji</a></p></body></html>
+                    ''' % (fault.vehicle.owner, fault.vehicle.get_full_name, fault.name,
+                           fault.entry_date.strftime('%d/%m/%Y'), fault.description, 'www.serwis-szynobusy.pl',
+                           fault.id)
+            users_email = []
+            users = User.objects.all()
+            if len(users) > 0:
+                for user in users:
+                    if user.email != '':
+                        users_email.append(user.email)
+                sub = 'Dodano nową usterkę bez reklamacji'
+                # linode blocked port for sent email
+                email(users_email, sub, body)
+            messages.success(request, 'Usterka została zapisana pomyślnie!')
+            return redirect(reverse('book:fault_without_complaint_list'))
+        else:
+            messages.error(request, 'Popraw dane wporowadzone w formularzu')
+    else:
+        form = AddFaultWithoutComplaintForm()
+    return render(request,
+                   template_name='book/fault_without_complaint/add.html',
+                   context={'title': 'Reklamacje',
+                            'form': form})
 
 @login_required()
 def inspection_list(request):
