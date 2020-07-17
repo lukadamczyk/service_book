@@ -1,8 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
-from .models import Owner, Vehicle, Complaint, Fault, Inspection, File
+from .models import Owner, Vehicle, Complaint, Fault, Inspection, File, Fault_without_complaint
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, \
-    EditFaultForm, EditComplaintForm
+    EditFaultForm, EditComplaintForm, FilterFaultWithoutComplaintForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
@@ -501,6 +501,62 @@ def edit_complaint(request, id):
                   context={'title': 'Usterka',
                            'complaint': complaint,
                            'form': form})
+
+@login_required()
+def fault_without_complaint_list(request):
+    faults_list = Fault_without_complaint.objects.all()
+    page = request.GET.get('page')
+    pages = page_counter(int(page)) if page else 0
+    form = FilterFaultWithoutComplaintForm(request.GET)
+    url_path = ''
+    status = request.GET.get('status', '')
+    vehicle = request.GET.get('vehicle', '')
+    date_to = request.GET.get('date_to', '')
+    date_from = request.GET.get('date_from', '')
+    url_path += '&' + 'status=' + status + '&vehicle=' + vehicle + '&date_to=' + date_to + '&date_from=' + date_from
+    if form.is_valid():
+        data = {}
+        cd = form.cleaned_data
+        if cd['status']:
+            faults_list = faults_list.filter(status=cd['status'])
+            data.update({'status': cd['status']})
+        if cd['vehicle']:
+            faults_list = faults_list.filter(vehicle=cd['vehicle'])
+            data.update({'vehicle': cd['vehicle'].id})
+        if cd['date_from']:
+            faults_list = faults_list.filter(entry_date__gte=cd['date_from'])
+            data.update({'date_from': cd['date_from']})
+        if cd['date_to']:
+            faults_list = faults_list.filter(entry_date__lte=cd['date_to'])
+            data.update({'date_to': cd['date_to']})
+        faults = paginator_get_page(faults_list, 10, page)
+        paginator = Paginator(faults_list, 10)
+        form = FilterFaultForm(data=data)
+        if len(faults_list) == 0:
+            messages.info(request, 'Brak wyników w bazie danych')
+            faults_list = Fault_without_complaint.objects.all()
+            faults = paginator_get_page(faults_list, 10, page)
+            paginator = Paginator(faults_list, 10)
+        return render(request,
+                      template_name='book/fault_without_complaint/list.html',
+                      context={'title': 'Usterki bez reklamacji',
+                               'faults': faults,
+                               'form': form,
+                               'pages': pages,
+                               'paginator': paginator,
+                               'url_path': url_path
+                               })
+    faults = paginator_get_page(faults_list, 10, page)
+    paginator = Paginator(faults_list, 10)
+    return render(request,
+                  template_name='book/fault_without_complaint/list.html',
+                  context={'title': 'Usterki bez reklamacji',
+                           'faults': faults,
+                           'form': form,
+                           'pages': pages,
+                           'paginator': paginator,
+                           'url_path': url_path
+                           })
 
 @login_required()
 def inspection_list(request):
