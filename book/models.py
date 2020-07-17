@@ -272,6 +272,70 @@ class Fault(models.Model):
         return self.name
 
 
+class Fault_without_complaint(models.Model):
+    status_choices = (
+        ('open', 'Otwarta'),
+        ('close', 'Zamknięta')
+    )
+    category_choices = (
+        ('pudło', (
+            ('nadwozie', 'Nadwozie'),
+            ('poszycie', 'Poszycie'),
+            ('podłoga', 'Podłoga'),
+            ('konstrukcja', 'Konstrukcja'),
+            ('układy nośne', 'Układy nośne'),
+            ('grodzenia', 'Grodzenia'),
+        )),
+        ('materiały wykończeniowe', (
+            ('malatura', 'Malatura'),
+            ('kalkomania', 'Kalkomania'),
+        )),
+        ('wyposażnie wewn.', 'Wyposażenie wewnętrzne'),
+        ('wózek', 'Wózek'),
+        ('urządz. ster. pojazdem', 'Urządzenia sterujące pojazdem'),
+        ('urządz, monitoringu i bezpiecz.', 'Urządzenia monitoringu i bezpieczeństwa'),
+        ('klima i orzewanie', 'Klimatyzacja i ogrzewanie'),
+        ('drzwi', 'Drzwi'),
+        ('sip', 'Urządzenia informacyjne'),
+        ('układ hamowania', 'Układ hamowania'),
+        ('układ sprzęgania', 'Układ sprzęgania'),
+        ('okna i szyby', 'Okna i szyby'),
+        ('układ elek.', 'Układ elektryczny'),
+        ('Układ napędowy', (
+            ('silnik', 'Silnik'),
+            ('przekładnia', 'Przekładnia'),
+        )),
+        ('Wyposażenie zewnętrzne', (
+            ('wycieraczki', 'Wycieraczki'),
+            ('lusterka', 'Lusterka'),
+            ('syreny', 'Syreny'),
+        )),
+        ('układ pneumatyczny', 'Układ pneumatyczny'),
+    )
+    name = models.CharField(max_length=40)
+    category = models.CharField(max_length=50,
+                                db_index=True,
+                                choices=category_choices)
+    description = models.TextField()
+    actions = models.TextField(blank=True)
+    comments = models.TextField(blank=True)
+    status = models.CharField(max_length=10,
+                              choices=status_choices)
+    entry_date = models.DateField()
+    end_date = models.DateField(blank=True,
+                                null=True)
+    need = models.TextField(blank=True)
+    vehicle = models.ForeignKey(Vehicle,
+                                related_name='vehicle_faults',
+                                on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ('entry_date',)
+
+    def __str__(self):
+        return self.name
+
+
 class Part(models.Model):
     condition_choices = (
         ('new', 'New'),
