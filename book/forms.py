@@ -1,7 +1,7 @@
 import datetime, re
 
 from django import forms
-from .models import Complaint, Fault
+from .models import Complaint, Fault, Fault_without_complaint
 from bootstrap_datepicker_plus import DatePickerInput
 
 
@@ -66,6 +66,34 @@ class FilterFaultForm(forms.ModelForm):
             'status': 'Status',
             'vehicle': 'Pojazd',
             'zr_number': 'Numer ZR',
+        }
+
+
+class FilterFaultWithoutComplaintForm(forms.ModelForm):
+
+    date_from = forms.DateField(required=True,
+                                widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+                                label='Od')
+    date_to = forms.DateField(required=False,
+                              widget=DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+                              label='Do')
+
+    def __init__(self, *args, **kwargs):
+        super(FilterFaultWithoutComplaintForm, self).__init__(*args, **kwargs)
+        self.fields['vehicle'].required = False
+
+    class Meta:
+        model = Fault_without_complaint
+        fields = ['status', 'vehicle', 'date_from', 'date_to']
+        labels = {
+            'status': 'Status',
+            'vehicle': 'Pojazd',
         }
 
 
