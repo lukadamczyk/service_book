@@ -47,7 +47,12 @@
             <td>{{ fault.actions }}</td>
           </tr>
           <tr>
-            <th scope="row"><a href="{% url 'book:edit_fault' fault.id %}">Edytuj usterkę</a></th>
+            <tr>
+              <th scope="row">Uwagi</th>
+              <td>{{ fault.comments }}</td>
+            </tr>
+            <tr>
+            <th scope="row"><a href="{% url 'book:edit_fault_without_complaint' fault.id %}">Edytuj usterkę</a></th>
             <td></td>
           </tr>
         </tbody>

@@ -11,7 +11,7 @@
 {{ form.media }}
 <div class="container">
   <h3>Edytuj usterkę</h3>
-  <form action="{% url 'book:edit_fault' fault.id %}" method="POST">
+  <form action="{% url 'book:edit_fault_without_complaint' fault.id %}" method="POST">
     {% csrf_token %}
     {{ form|crispy }}
     <button type="submit" class="btn btn-primary">Zapisz</button>
