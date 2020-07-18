@@ -2,7 +2,8 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import Owner, Vehicle, Complaint, Fault, Inspection, File, Fault_without_complaint
 from django.core.paginator import Paginator
 from .forms import FilterComplaintsForm, FilterFaultForm, AddComplaintForm, AddFaultForm, NumberOfFaults, \
-    EditFaultForm, EditComplaintForm, FilterFaultWithoutComplaintForm, AddFaultWithoutComplaintForm
+    EditFaultForm, EditComplaintForm, FilterFaultWithoutComplaintForm, EditFaultWithoutComplaintForm, \
+    AddFaultWithoutComplaintForm
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
@@ -530,9 +531,12 @@ def fault_without_complaint_list(request):
         if cd['date_to']:
             faults_list = faults_list.filter(entry_date__lte=cd['date_to'])
             data.update({'date_to': cd['date_to']})
+        if cd['client']:
+            faults_list = faults_list.filter(vehicle__owner=cd['client'])
+            data.update({'client': cd['client']})
         faults = paginator_get_page(faults_list, 10, page)
         paginator = Paginator(faults_list, 10)
-        form = FilterFaultForm(data=data)
+        form = FilterFaultWithoutComplaintForm(data=data)
         if len(faults_list) == 0:
             messages.info(request, 'Brak wyników w bazie danych')
             faults_list = Fault_without_complaint.objects.all()
@@ -611,6 +615,61 @@ def add_fault_without_complaint(request):
                    template_name='book/fault_without_complaint/add.html',
                    context={'title': 'Reklamacje',
                             'form': form})
+
+@login_required()
+def edit_fault_without_complaint(request, id):
+    fault = get_object_or_404(Fault_without_complaint, id=id)
+    if request.method == 'POST':
+        form = EditFaultWithoutComplaintForm(instance=fault,
+                             data=request.POST)
+        if form.is_valid():
+            fault = get_object_or_404(Fault_without_complaint, id=id)
+            cd = form.cleaned_data
+            if cd['name'] == fault.name and cd['category'] == fault.category and cd['description'] == \
+                    fault.description and cd['actions'] == fault.actions and cd['comments'] == fault.comments and cd[
+                'vehicle'] == fault.vehicle and cd['status'] == fault.status and cd['end_date'] == fault.end_date\
+                    and cd['need'] == fault.need and cd['entry_date'] == fault.entry_date:
+                messages.error(request, 'Nie wprowadzono żadnych zmian')
+                return render(request,
+                              template_name='book/fault_without_complaint/edit.html',
+                              context={'title': 'Usterka',
+                                       'fault': fault,
+                                       'form': form})
+            if cd['name'] and cd['name'] != fault.name:
+                fault.name = cd['name']
+            if cd['category'] and cd['category'] != fault.category:
+                fault.category = cd['category']
+            if cd['description'] and cd['description'] != fault.description:
+                fault.description = cd['description']
+            if cd['actions'] and cd['actions'] != fault.actions:
+                fault.actions = cd['actions']
+            if cd['comments'] and cd['comments'] != fault.comments:
+                fault.comments = cd['comments']
+            if cd['vehicle'] and cd['vehicle'] != fault.vehicle:
+                fault.vehicle = cd['vehicle']
+            if cd['status'] and cd['status'] != fault.status:
+                fault.status = cd['status']
+                if cd['end_date'] != fault.end_date:
+                    fault.end_date = cd['end_date']
+            if cd['end_date'] and cd['end_date'] != fault.end_date:
+                fault.end_date = cd['end_date']
+            if cd['need'] and cd['need'] != fault.need:
+                fault.need = cd['need']
+            if cd['entry_date'] and cd['entry_date'] != fault.entry_date:
+                fault.entry_date = cd['entry_date']
+
+            fault.save()
+            messages.success(request, 'Zmiany zapisano pomyślnie')
+            return redirect(reverse('book:fault_without_complaint_list'))
+        messages.error(request, 'Popraw wprowadzone dane')
+        print(form.errors)
+    else:
+        form = EditFaultWithoutComplaintForm(instance=fault)
+    return render(request,
+                  template_name='book/fault_without_complaint/edit.html',
+                  context={'title': 'Usterka bez reklamacji',
+                           'fault': fault,
+                           'form': form})
 
 @login_required()
 def inspection_list(request):
