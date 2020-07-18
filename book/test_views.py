@@ -1,13 +1,15 @@
 from django.test import TestCase
 from django.urls import reverse
 from .test_models import create_vehicle, create_owner, create_trolleys, create_complaint, create_fault, create_inspection
-from .models import Owner, Vehicle, Complaint, Fault, Inspection
+from .models import Owner, Vehicle, Complaint, Fault, Inspection, Fault_without_complaint
 from django.contrib.auth.models import User
-from .forms import FilterComplaintsForm, FilterFaultForm
+from .forms import FilterComplaintsForm, FilterFaultForm, EditFaultWithoutComplaintForm
 from django.core import mail
 
 import datetime
 
+day = datetime.timedelta(1)
+tomorrow = datetime.date.today() + day
 
 class HomeViewTestcase(TestCase):
 
