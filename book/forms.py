@@ -1,9 +1,8 @@
 import datetime, re
 
 from django import forms
-from .models import Complaint, Fault, Fault_without_complaint
+from .models import Complaint, Fault, Fault_without_complaint, Owner
 from bootstrap_datepicker_plus import DatePickerInput
-
 
 
 class FilterComplaintsForm(forms.ModelForm):
@@ -282,6 +281,75 @@ class AddFaultWithoutComplaintForm(forms.ModelForm):
         if status == 'close' and end_date < entry_date:
             raise forms.ValidationError('Data zakończenia nie może być wcześniejsza od daty wpłynięcia usterki')
 
+
+class EditFaultWithoutComplaintForm(forms.ModelForm):
+
+    class Meta:
+        model = Fault_without_complaint
+        widgets = {
+            'entry_date': DatePickerInput(options=
+            {
+                'locale': 'pl'
+            }),
+            'end_date': DatePickerInput(options=
+                                          {
+                                              'locale': 'pl'
+                                          }),
+        }
+        labels = {
+            'name': 'Usterka',
+            'vehicle': 'Pojazd',
+            'category': 'Kategoria',
+            'description': 'Opis',
+            'actions': 'Podjęte działania',
+            'comments': 'Uwagi',
+            'entry_date': 'Data wpłynięcia',
+            'end_date': 'Data zakończenia',
+            'need': 'Potrzeby'
+        }
+        fields = ['name', 'vehicle', 'category', 'description', 'actions', 'comments', 'status', 'entry_date',
+                  'end_date', 'need']
+
+    def __init__(self, *args, **kwargs):
+        super(EditFaultWithoutComplaintForm, self).__init__(*args, **kwargs)
+        fields = ['name', 'category', 'description', 'status']
+        self.fields['status'].required = False
+        self.fields['name'].required = False
+        self.fields['vehicle'].required = False
+        self.fields['entry_date'].required = False
+        self.fields['category'].required = False
+        self.fields['description'].required = False
+        for field in fields:
+            if field == 'category':
+                self.fields[field].error_messages.update({
+                    'invalid_choice': 'Wybierz jedną z proponowanych kategori'
+                })
+            if field == 'name':
+                self.fields[field].error_messages.update({
+                    'max_length': 'To pole może zawierać maksymalinie 40 znaków'
+                })
+
+    def clean(self):
+        cleaned_data = super().clean()
+        status = cleaned_data.get('status')
+        end_date = cleaned_data.get('end_date')
+        entry_date = cleaned_data.get('entry_date')
+        today = datetime.date.today()
+
+        if status == 'close' and end_date is None:
+            raise forms.ValidationError('Podaj datę zakończenia usterki')
+
+        if status == 'open' and end_date:
+            raise forms.ValidationError('Nie można podać daty zakończnia usterki przy otwarty statusie')
+
+        if end_date and end_date > today:
+            raise forms.ValidationError('Data zakończenia nie może być póżniejsza niż {}'.format(today.strftime(
+                        '%d/%m/%Y')))
+        if entry_date and entry_date > today:
+            raise forms.ValidationError('Data wpłynięcia nie może być póżniejsza niż {}'.format(today.strftime(
+                        '%d/%m/%Y')))
+        if status == 'close' and end_date < entry_date:
+            raise forms.ValidationError('Data zakończenia nie może być wcześniejsza od daty wpłynięcia usterki')
 
 
 class NumberOfFaults(forms.Form):
