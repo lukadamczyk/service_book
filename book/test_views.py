@@ -849,4 +849,639 @@ class EditFaultFormTestCase(TestCase):
             '%d/%m/%Y')))
 
 
+class EditFaultWithoutComplaintFormTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        trolleys2 = create_trolleys(name='sa124', first='1233', second='2342')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        fault = Fault_without_complaint(name='Usterka drzwi',
+                                        category='podłoga',
+                                        description='test usterki',
+                                        status='open',
+                                        entry_date=datetime.date.today(),
+                                        vehicle=vehicle)
+        fault.save()
+        vehicle.save()
+
+    def test_valid_edit_fault_without_complaint(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': 'Usterka drzwi prawych zerwany pasek',
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.description, 'Usterka drzwi prawych zerwany pasek')
+
+    def test_invalid_edit_fault_without_complaint_zero_changes(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/edit.html')
+        self.assertContains(response, 'Nie wprowadzono żadnych zmian')
+
+    def test_valid_edit_fault_without_complaint_changed_status_to_open_save_end_date(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        fault.status = 'close'
+        fault.entry_date = datetime.date(2020, 4, 14)
+        fault.end_date = datetime.date(2020, 4, 20)
+        fault.save()
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': 'open',
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.end_date, None)
+
+    def test_valid_edit_fault_without_complaint_change_name(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': 'Usterka silnika',
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.name, 'Usterka silnika')
+
+    def test_valid_edit_fault_without_complaint_change_category(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': 'syreny',
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.category, 'syreny')
+
+    def test_valid_edit_fault_without_complaint_change_description(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': 'Usterka drzwi prawych zerwany pasek',
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.description, 'Usterka drzwi prawych zerwany pasek')
+
+    def test_valid_edit_fault_without_complaint_change_actions(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': 'Wmieniono silnik B',
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.actions, 'Wmieniono silnik B')
+
+    def test_valid_edit_fault_without_complaint_change_comments(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': 'brak komentarzy',
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.comments, 'brak komentarzy')
+
+    def test_valid_edit_fault_without_complaint_change_vehicle(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        owner = create_owner(name='Koleje Pomorskie', slug='koleje-pomorskie')
+        trolleys = create_trolleys(name='sa124-004', first='adn32', second='2342as')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-002', number='002', vehicle_type='SA132')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.actions,
+            'vehicle': vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.vehicle, vehicle)
+
+    def test_valid_edit_fault_without_complaint_change_status(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': "close",
+            'end_date': fault.entry_date,
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.status, 'close')
+        self.assertEqual(fault.end_date, fault.entry_date)
+
+    def test_valid_edit_fault_without_complaint_change_end_date(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        fault.entry_date = datetime.date(2020, 2, 2)
+        fault.status = 'close'
+        fault.end_date = datetime.date(2020, 2, 6)
+        fault.save()
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': datetime.date(2020, 2, 10),
+            'entry_date': fault.entry_date,
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.end_date, datetime.date(2020, 2, 10))
+
+    def test_valid_edit_fault_without_complaint_change_entry_date(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': datetime.date(2020, 5, 1),
+            'need': fault.need
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.entry_date, datetime.date(2020, 5, 1))
+
+    def test_valid_edit_fault_without_complaint_change_entry_date(self):
+        fault = Fault_without_complaint.objects.get(name='Usterka drzwi')
+        data = {
+            'name': fault.name,
+            'category': fault.category,
+            'description': fault.description,
+            'actions': fault.actions,
+            'comments': fault.comments,
+            'vehicle': fault.vehicle.id,
+            'status': fault.status,
+            'end_date': '',
+            'entry_date': fault.entry_date,
+            'need': 'potrzeby'
+        }
+        response = self.client.post(reverse('book:edit_fault_without_complaint', kwargs={'id': fault.id}),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
+        fault = Fault_without_complaint.objects.get(id=fault.id)
+        self.assertEqual(fault.need, 'potrzeby')
+
+
+class AddFaultWithoutComplaintFormTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+
+    def test_valid_add_fault_without_complaint(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'open',
+            'end_date': '',
+            'entry_date': datetime.date(2020, 5, 12),
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Usterka została zapisana pomyślnie!')
+        fault = Fault_without_complaint.objects.get(name='Usterka silnika')
+        self.assertEqual(fault.name, 'Usterka silnika')
+        self.assertEqual(fault.category, 'silnik')
+        self.assertEqual(fault.description, 'Wyciek oleju')
+        self.assertEqual(fault.actions, 'Wyczyszenie wycieku i oczekiwanie na materiał')
+        self.assertEqual(fault.comments, 'brak')
+        self.assertEqual(fault.status, 'open')
+        self.assertEqual(fault.end_date, None)
+        self.assertEqual(fault.entry_date, datetime.date(2020, 5, 12))
+        self.assertEqual(fault.need, 'Uszczelka klapy zaworowej')
+
+    def test_invalid_add_fault_without_complaint_open_status_with_end_date(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'open',
+            'end_date': datetime.date(2020, 5, 14),
+            'entry_date': datetime.date(2020, 5, 12),
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/add.html')
+        self.assertContains(response, 'Nie można podać daty zakończnia usterki przy otwarty statusie')
+        faults = Fault_without_complaint.objects.all()
+        self.assertEqual(len(faults), 0)
+
+    def test_invalid_add_fault_without_complaint_close_status_with_wrong_end_date_1(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'close',
+            'end_date': tomorrow,
+            'entry_date': datetime.date(2020, 5, 12),
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/add.html')
+        self.assertContains(response, 'Data zakończenia nie może być póżniejsza niż {}'.format(datetime.date.today().strftime(
+                        '%d/%m/%Y')))
+        faults = Fault_without_complaint.objects.all()
+        self.assertEqual(len(faults), 0)
+
+    def test_invalid_add_fault_without_complaint_close_status_with_wrong_end_date_2(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'close',
+            'end_date': datetime.date(2020, 5, 11),
+            'entry_date': datetime.date(2020, 5, 12),
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/add.html')
+        self.assertContains(response, 'Data zakończenia nie może być wcześniejsza od daty wpłynięcia usterki')
+        faults = Fault_without_complaint.objects.all()
+        self.assertEqual(len(faults), 0)
+
+    def test_invalid_add_fault_without_complaint_open_status_with_wrong_entry_date(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'open',
+            'end_date': '',
+            'entry_date': tomorrow,
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/add.html')
+        self.assertContains(response, 'Data wpłynięcia nie może być póżniejsza niż {}'.format(datetime.date.today().strftime(
+                        '%d/%m/%Y')))
+        faults = Fault_without_complaint.objects.all()
+        self.assertEqual(len(faults), 0)
+
+    def test_invalid_add_fault_without_complaint_close_status_without_end_date(self):
+        vehicle = Vehicle.objects.get(slug='SA132-001')
+        data = {
+            'name': 'Usterka silnika',
+            'category': 'silnik',
+            'description': 'Wyciek oleju',
+            'actions': 'Wyczyszenie wycieku i oczekiwanie na materiał',
+            'comments': 'brak',
+            'vehicle': vehicle.id,
+            'status': 'close',
+            'end_date': '',
+            'entry_date': datetime.date(2020, 5, 12),
+            'need': 'Uszczelka klapy zaworowej'
+        }
+        response = self.client.post(reverse('book:add_fault_without_complaint'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/add.html')
+        self.assertContains(response, 'Podaj datę zakończenia usterki')
+        faults = Fault_without_complaint.objects.all()
+        self.assertEqual(len(faults), 0)
+
+
+class ListFaultWithoutComplaintFormTestCase(TestCase):
+    def setUp(self):
+        User.objects.create_user('Tom',
+                                 'tom@mail.com',
+                                 'tompassword')
+        self.client.login(username='Tom',
+                          password='tompassword')
+        owner = create_owner(name='Koleje Dolnośląskie', slug='koleje-dolnośląskie')
+        owner2 = create_owner(name='Koleje Wielkopolskie', slug='koleje-wielkopolskie')
+
+        trolleys = create_trolleys(name='sa123', first='123', second='234')
+        trolleys2 = create_trolleys(name='sa125', first='12322335', second='23324234')
+        trolleys3 = create_trolleys(name='sa134', first='123223ad', second='23tdc4234')
+        vehicle = create_vehicle(trolleys, owner, slug='SA132-001', number='001', vehicle_type='SA132')
+        vehicle2 = create_vehicle(trolleys2, owner, slug='SA132-002', number='002', vehicle_type='SA132')
+        vehicle3 = create_vehicle(trolleys3, owner2, slug='SA132-003', number='003', vehicle_type='SA132')
+        vehicle.save()
+        vehicle2.save()
+        vehicle3.save()
+        fault1 = Fault_without_complaint(name='Usterka drzwi',
+                                category='podłoga',
+                                description='test usterki',
+                                status='open',
+                                entry_date=datetime.date(2020, 5, 12),
+                                vehicle=vehicle)
+        fault2 = Fault_without_complaint(name='Usterka sinika',
+                                category='podłoga',
+                                description='test usterki',
+                                status='open',
+                                entry_date=datetime.date(2020, 5, 20),
+                                vehicle=vehicle)
+        fault3 = Fault_without_complaint(name='Usterka WC',
+                                category='podłoga',
+                                description='test usterki',
+                                status='close',
+                                entry_date=datetime.date(2020, 4, 12),
+                                vehicle=vehicle,
+                                end_date=datetime.date(2020, 5, 25))
+        fault4 = Fault_without_complaint(name='Usterka UPP',
+                                category='podłoga',
+                                description='test usterki',
+                                status='open',
+                                entry_date=datetime.date(2020, 2, 1),
+                                vehicle=vehicle2)
+        fault5 = Fault_without_complaint(name='Usterka klimatyzacji',
+                                category='podłoga',
+                                description='test usterki',
+                                status='open',
+                                entry_date=datetime.date(2020, 2, 14),
+                                vehicle=vehicle3)
+        fault1.save()
+        fault2.save()
+        fault3.save()
+        fault4.save()
+        fault5.save()
+
+    def test_valid_list_fault_without_complaint_close_status(self):
+        data = {
+            'vehicle': '',
+            'status': 'close',
+            'date_from': '',
+            'date_to': '',
+            'client': ''
+        }
+        response = self.client.get(reverse('book:fault_without_complaint_list'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Zamknięta')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>]')
+
+    def test_valid_list_fault_without_complaint_open_status(self):
+        data = {
+            'vehicle': '',
+            'status': 'open',
+            'date_from': '',
+            'date_to': '',
+            'client': ''
+        }
+        response = self.client.get(reverse('book:fault_without_complaint_list'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka sinika>]')
+
+    def test_valid_list_fault_without_complaint_vehicle(self):
+        vehicle = Vehicle.objects.get(number='003')
+        data = {
+            'vehicle': vehicle.id,
+            'status': '',
+            'date_from': '',
+            'date_to': '',
+            'client': ''
+        }
+        response = self.client.get(reverse('book:fault_without_complaint_list'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, 'Pojazd: SA132-003')
+        self.assertContains(response, 'Otwarta')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka klimatyzacji>]')
+
+    def test_valid_list_fault_without_complaint_date_from(self):
+        data = {
+            'vehicle': '',
+            'status': '',
+            'date_from': datetime.date(2020, 4, 11),
+            'date_to': '',
+            'client': ''
+        }
+        response = self.client.get(reverse('book:fault_without_complaint_list'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, '04/11/2020')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>, <Fault_without_complaint: '
+                                                                           'Usterka drzwi>, '
+                                                                           '<Fault_without_complaint: Usterka sinika>]')
+
+    def test_valid_list_fault_without_complaint_date_to(self):
+        data = {
+            'vehicle': '',
+            'status': '',
+            'date_from': '',
+            'date_to': datetime.date(2020, 4, 21),
+            'client': ''
+        }
+        response = self.client.get(reverse('book:fault_without_complaint_list'),
+                                    data=data,
+                                    follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertContains(response, '04/21/2020')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: '
+                                                                           'Usterka klimatyzacji>, <Fault_without_complaint: Usterka WC>]')
+
+
+
+
+
 
