@@ -22,4 +22,6 @@ urlpatterns = [
          name='fault_without_complaint_detail'),
     path('fault_without_complaint/', views.fault_without_complaint_list, name='fault_without_complaint_list'),
     path('fault_without_complaint/add/', views.add_fault_without_complaint, name='add_fault_without_complaint'),
+    path('fault_without_complaint/edit/<int:id>/', views.edit_fault_without_complaint,
+         name='edit_fault_without_complaint'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
