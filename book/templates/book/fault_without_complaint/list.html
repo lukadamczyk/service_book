@@ -16,8 +16,8 @@
     <!-- {% csrf_token %} -->
     {{ form|crispy }}
     <input type="submit" value="Szukaj">
+    <a class="btn btn-light m-2 ml-4" href="{% url 'book:add_fault_without_complaint' %}" role="button">Dodaj usterkę</a>
   </form>
-  <a href="{% url 'book:add_fault_without_complaint' %}">Dodaj usterkę</a>
   <table class="table">
     <thead>
       <tr>
