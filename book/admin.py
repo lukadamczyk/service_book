@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys, Fault_without_complaint
 
 
 class VehicleAdmin(admin.ModelAdmin):
@@ -29,6 +29,13 @@ class FaultAdmin(admin.ModelAdmin):
     list_filter = ('vehicle', 'status')
 
 admin.site.register(Fault, FaultAdmin)
+
+class FaultWithoutComplaintAdmin(admin.ModelAdmin):
+    list_display = ('name', 'status', 'vehicle', 'description', 'actions',
+                    'entry_date', 'end_date', 'need', 'comments')
+    list_filter = ('vehicle', 'status')
+
+admin.site.register(Fault_without_complaint, FaultWithoutComplaintAdmin)
 
 
 class PartAdmin(admin.ModelAdmin):

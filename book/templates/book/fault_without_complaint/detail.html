@@ -1,0 +1,63 @@
+{% extends "book/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    {% if fault %}
+      <table class="table table-bordered table-hover">
+        <thead>
+          <tr>
+            <th scope="col">{{ fault.name }}</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Klient</th>
+            <td>{{ fault.vehicle.owner }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Pojazd</th>
+            <td>{{ fault.vehicle.get_full_name }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Data wpłynięcia</th>
+            <td>{{ fault.entry_date|date:"d-m-Y" }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Status</th>
+            <td>{{ fault.get_status_display }}</td>
+          </tr>
+          {% if fault.status == 'close' %}
+          <tr>
+            <th scope="row">Data zamknięcia</th>
+            <td>{{ fault.end_date|date:'d-m-Y' }}</td>
+          </tr>
+          {% endif %}
+          <tr>
+            <th scope="row">Opis</th>
+            <td>{{ fault.description }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Podjęte działania</th>
+            <td>{{ fault.need }}</td>
+          </tr>
+          <tr>
+            <th scope="row">Potrzeby</th>
+            <td>{{ fault.actions }}</td>
+          </tr>
+          <tr>
+            <tr>
+              <th scope="row">Uwagi</th>
+              <td>{{ fault.comments }}</td>
+            </tr>
+            <tr>
+            <th scope="row"><a href="{% url 'book:edit_fault_without_complaint' fault.id %}">Edytuj usterkę</a></th>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
