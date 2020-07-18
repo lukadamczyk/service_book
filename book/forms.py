@@ -82,11 +82,20 @@ class FilterFaultWithoutComplaintForm(forms.ModelForm):
                                               'locale': 'pl'
                                           }),
                               label='Do')
+    blank_choice = ('', '---------')
+    list_of_choices = [blank_choice]
+    for owner in Owner.objects.all():
+        list_of_choices.append((owner.id, owner.name))
+    client = forms.ChoiceField(choices=list_of_choices,
+                               required=False,
+                               label='Klient',
+                               initial='')
 
     def __init__(self, *args, **kwargs):
         super(FilterFaultWithoutComplaintForm, self).__init__(*args, **kwargs)
         self.fields['vehicle'].required = False
         self.fields['status'].required = False
+
 
     class Meta:
         model = Fault_without_complaint
