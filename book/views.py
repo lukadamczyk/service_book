@@ -495,8 +495,8 @@ def edit_complaint(request, id):
             if file_doc:
                 file_document = File(complaint=complaint, file_document=request.FILES['file_doc'])
                 file_document.save()
-            messages.success(request, 'Zmiany zapisano pomyśnnie')
-            return redirect(reverse('book:complaint_list'))
+            messages.success(request, 'Zmiany zapisano pomyślnie')
+            return redirect(reverse('book:complaint_detail', kwargs={'id': id}))
         messages.error(request, 'Popraw wprowadzone dane')
     else:
         form = EditComplaintForm(instance=complaint)
