@@ -489,6 +489,16 @@ def edit_complaint(request, id):
                 complaint.end_date = cd['end_date']
 
             if complaint.status != cd['status']:
+                if cd['status'] == 'close':
+                    for fault in complaint.complaint_faults.all():
+                        if fault.status == 'open':
+                            messages.error(request, 'Nie można zamknąć tej reklamacji. Najpierw zamknij wszystkie '
+                                                   'usterki')
+                            return render(request,
+                                          template_name='book/complaint/edit.html',
+                                          context={'title': 'Usterka',
+                                                   'complaint': complaint,
+                                                   'form': form})
                 complaint.status = cd['status']
 
             if complaint.vehicle != cd['vehicle']:
