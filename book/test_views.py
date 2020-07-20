@@ -199,9 +199,9 @@ class FaultListViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault/list.html')
         self.assertEqual(response.context['title'], 'Usterki')
-        self.assertQuerysetEqual(response.context['faults'], ['<Fault: usterka WC>',
-                                                      '<Fault: usterka drzwi>',
-                                                      '<Fault: usterka silnika>'])
+        self.assertQuerysetEqual(response.context['faults'], ['<Fault: usterka silnika>',
+                                                              '<Fault: usterka drzwi>',
+                                                              '<Fault: usterka WC>'])
         self.assertContains(response, 'usterka drzwi')
 
     def test_valid_form(self):
@@ -312,7 +312,7 @@ class AddComplaintView(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/complaint/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         complaint = Complaint.objects.get(document_number='KW1234')
         self.assertEqual(complaint.entry_date, datetime.date(2019, 1, 1))
         self.assertEqual(len(complaint.complaint_faults.all()), 1)
@@ -432,8 +432,8 @@ class EditComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/complaint/list.html')
-        self.assertContains(response, 'Zmiany zapisano pomyśnnie')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
+        self.assertContains(response, 'Zmiany zapisano pomyślnie')
 
     def test_invalid_edit_form_without_changes(self):
         client = Owner.objects.first()
@@ -492,7 +492,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.description, 'test description')
@@ -518,7 +518,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.name, 'usterka12')
@@ -544,7 +544,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.category, 'przekładnia')
@@ -570,7 +570,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.actions, 'test12')
@@ -596,7 +596,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.comments, 'comment')
@@ -622,7 +622,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.zr_number, '523124')
@@ -648,7 +648,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.status, 'open')
@@ -678,7 +678,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(id=fault.id)
         self.assertEqual(fault.status, 'close')
@@ -729,7 +729,7 @@ class EditFaultFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault/list.html')
+        self.assertTemplateUsed(response, 'book/complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault.objects.get(zr_number='123456')
         self.assertEqual(fault.name, 'qwedajshfiwefn59ikns23enfitr9jur3hadnfo')
@@ -887,7 +887,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.description, 'Usterka drzwi prawych zerwany pasek')
@@ -936,7 +936,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.end_date, None)
@@ -959,7 +959,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.name, 'Usterka silnika')
@@ -982,7 +982,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.category, 'syreny')
@@ -1005,7 +1005,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.description, 'Usterka drzwi prawych zerwany pasek')
@@ -1028,7 +1028,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.actions, 'Wmieniono silnik B')
@@ -1051,7 +1051,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.comments, 'brak komentarzy')
@@ -1077,7 +1077,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.vehicle, vehicle)
@@ -1100,7 +1100,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.status, 'close')
@@ -1128,7 +1128,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.end_date, datetime.date(2020, 2, 10))
@@ -1151,7 +1151,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.entry_date, datetime.date(2020, 5, 1))
@@ -1174,7 +1174,7 @@ class EditFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Zmiany zapisano pomyślnie')
         fault = Fault_without_complaint.objects.get(id=fault.id)
         self.assertEqual(fault.need, 'potrzeby')
@@ -1209,7 +1209,7 @@ class AddFaultWithoutComplaintFormTestCase(TestCase):
                                     data=data,
                                     follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
+        self.assertTemplateUsed(response, 'book/fault_without_complaint/detail.html')
         self.assertContains(response, 'Usterka została zapisana pomyślnie!')
         fault = Fault_without_complaint.objects.get(name='Usterka silnika')
         self.assertEqual(fault.name, 'Usterka silnika')
@@ -1425,7 +1425,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
                                     follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka sinika>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka sinika>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka UPP>]')
 
     def test_valid_list_fault_without_complaint_vehicle(self):
         vehicle = Vehicle.objects.get(number='003')
@@ -1459,9 +1459,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
         self.assertContains(response, '04/11/2020')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>, <Fault_without_complaint: '
-                                                                           'Usterka drzwi>, '
-                                                                           '<Fault_without_complaint: Usterka sinika>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka sinika>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka WC>]')
 
     def test_valid_list_fault_without_complaint_date_to(self):
         data = {
@@ -1477,8 +1475,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
         self.assertContains(response, '04/21/2020')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: '
-                                                                           'Usterka klimatyzacji>, <Fault_without_complaint: Usterka WC>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka UPP>]')
 
 
 
