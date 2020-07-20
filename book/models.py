@@ -330,7 +330,7 @@ class Fault_without_complaint(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('entry_date',)
+        ordering = ('-entry_date',)
 
     def __str__(self):
         return self.name
