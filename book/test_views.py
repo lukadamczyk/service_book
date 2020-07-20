@@ -199,9 +199,9 @@ class FaultListViewTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault/list.html')
         self.assertEqual(response.context['title'], 'Usterki')
-        self.assertQuerysetEqual(response.context['faults'], ['<Fault: usterka WC>',
-                                                      '<Fault: usterka drzwi>',
-                                                      '<Fault: usterka silnika>'])
+        self.assertQuerysetEqual(response.context['faults'], ['<Fault: usterka silnika>',
+                                                              '<Fault: usterka drzwi>',
+                                                              '<Fault: usterka WC>'])
         self.assertContains(response, 'usterka drzwi')
 
     def test_valid_form(self):
@@ -1425,7 +1425,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
                                     follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka sinika>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka sinika>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka UPP>]')
 
     def test_valid_list_fault_without_complaint_vehicle(self):
         vehicle = Vehicle.objects.get(number='003')
@@ -1459,9 +1459,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
         self.assertContains(response, '04/11/2020')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>, <Fault_without_complaint: '
-                                                                           'Usterka drzwi>, '
-                                                                           '<Fault_without_complaint: Usterka sinika>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka sinika>, <Fault_without_complaint: Usterka drzwi>, <Fault_without_complaint: Usterka WC>]')
 
     def test_valid_list_fault_without_complaint_date_to(self):
         data = {
@@ -1477,8 +1475,7 @@ class ListFaultWithoutComplaintFormTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'book/fault_without_complaint/list.html')
         self.assertContains(response, '04/21/2020')
-        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka UPP>, <Fault_without_complaint: '
-                                                                           'Usterka klimatyzacji>, <Fault_without_complaint: Usterka WC>]')
+        self.assertEqual(response.context['faults'].object_list.__str__(), '[<Fault_without_complaint: Usterka WC>, <Fault_without_complaint: Usterka klimatyzacji>, <Fault_without_complaint: Usterka UPP>]')
 
 
 
