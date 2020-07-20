@@ -177,7 +177,7 @@ class Complaint(models.Model):
         return self.document_number
 
     class Meta:
-        ordering = ('-published_date',)
+        ordering = ('-entry_date',)
 
     @property
     def day_counter(self):
