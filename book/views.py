@@ -393,7 +393,11 @@ def edit_fault(request, id):
                                   context={'title': 'Usterka',
                                            'fault': fault,
                                            'form': form})
-
+                if cd['status'] == 'open' and fault.complaint.status == 'close':
+                    complaint = get_object_or_404(Complaint, id=fault.complaint.id)
+                    complaint.status = 'open'
+                    complaint.end_date = None
+                    complaint.save()
                 fault.status = cd['status']
                 fault.end_date = cd['end_date']
             if cd['end_date'] and cd['end_date'] != fault.end_date:
