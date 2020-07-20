@@ -608,7 +608,7 @@ def add_fault_without_complaint(request):
                 # linode blocked port for sent email
                 email(users_email, sub, body)
             messages.success(request, 'Usterka została zapisana pomyślnie!')
-            return redirect(reverse('book:fault_without_complaint_list'))
+            return redirect(reverse('book:fault_without_complaint_detail', kwargs={'id': fault.id}))
         else:
             messages.error(request, 'Popraw dane wporowadzone w formularzu')
     else:
