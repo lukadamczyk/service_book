@@ -420,7 +420,7 @@ def edit_fault(request, id):
 
             fault.save()
             messages.success(request, 'Zmiany zapisano pomyślnie')
-            return redirect(reverse('book:fault_list'))
+            return redirect(reverse('book:complaint_detail', kwargs={'id': fault.complaint.id}))
         messages.error(request, 'Popraw wprowadzone dane')
     else:
         form = EditFaultForm(instance=fault)
