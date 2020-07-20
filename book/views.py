@@ -90,7 +90,9 @@ def complaint_list(request):
     to_close = request.GET.get('to_close')
     if to_close == '1':
         complaints_list = Complaint.objects.all()
-        complaints_list = complaints_list.filter(status='open', complaint_faults__status='close').exclude(
+        complaints_list = complaints_list.filter(status='open',
+                                                 complaint_faults__status='close',
+                                                 ).exclude(
             complaint_faults__status='open')
         complaints = paginator_get_page(complaints_list, 10, page)
         return render(request,

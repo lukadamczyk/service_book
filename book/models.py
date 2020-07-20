@@ -177,7 +177,7 @@ class Complaint(models.Model):
         return self.document_number
 
     class Meta:
-        ordering = ('-published_date',)
+        ordering = ('-entry_date',)
 
     @property
     def day_counter(self):
@@ -266,7 +266,7 @@ class Fault(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('entry_date',)
+        ordering = ('-entry_date',)
 
     def __str__(self):
         return self.name
@@ -330,7 +330,7 @@ class Fault_without_complaint(models.Model):
                                 on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ('entry_date',)
+        ordering = ('-entry_date',)
 
     def __str__(self):
         return self.name
