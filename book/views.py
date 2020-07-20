@@ -662,7 +662,7 @@ def edit_fault_without_complaint(request, id):
 
             fault.save()
             messages.success(request, 'Zmiany zapisano pomyślnie')
-            return redirect(reverse('book:fault_without_complaint_list'))
+            return redirect(reverse('book:fault_without_complaint_detail', kwargs={'id': id}))
         messages.error(request, 'Popraw wprowadzone dane')
         print(form.errors)
     else:
