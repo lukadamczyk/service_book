@@ -271,7 +271,7 @@ def add_complaint(request):
                 # linode blocked port for sent email
                 email(users_email, sub, body)
             messages.success(request, 'Reklamacja została zapisana pomyślnie!')
-            return redirect(reverse('book:complaint_list'))
+            return redirect(reverse('book:complaint_detail', kwargs={'id': complaint.id}))
         else:
             messages.error(request, 'Popraw dane wporowadzone w formularzu')
     else:
