@@ -418,6 +418,15 @@ def edit_fault(request, id):
                                   context={'title': 'Usterka',
                                            'fault': fault,
                                            'form': form})
+                if fault.complaint.end_date and cd['end_date'] > fault.complaint.end_date:
+                    messages.error(request,
+                                   'Data zakończenia usterki nie może być późniejsza od daty zakończenia reklamacji {'
+                                   '}'.format(fault.complaint.end_date.strftime('%d/%m/%Y')))
+                    return render(request,
+                                  template_name='book/fault/edit.html',
+                                  context={'title': 'Usterka',
+                                           'fault': fault,
+                                           'form': form})
                 fault.end_date = cd['end_date']
             if cd['need'] and cd['need'] != fault.need:
                 fault.need = cd['need']
