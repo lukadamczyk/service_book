@@ -513,7 +513,7 @@ def edit_complaint(request, id):
 
                         if cd['end_date'] < last_date.end_date:
                             messages.error(request, 'Data zamknięcia reklamacji nie może być wcześniejsza od daty '
-                                                    'zamknięcia ostatniej rekalamacji: {} - {}'.format(last_date.name,
+                                                    'zamknięcia ostatniej usterki: {} - {}'.format(last_date.name,
                                                                                                        last_date.end_date.strftime(
             '%d/%m/%Y')))
                             return render(request,
