@@ -495,6 +495,32 @@ def edit_complaint(request, id):
                 complaint.entry_date = cd['entry_date']
 
             if complaint.end_date != cd['end_date']:
+                if cd['end_date'] != None:
+                    dates = []
+                    date = False
+                    for fault in complaint.complaint_faults.all():
+                        if isinstance(fault.end_date, datetime.date):
+                            dates.append(fault)
+                            date = True
+                    if date:
+                        last_date = None
+                        for fault in dates:
+                            if last_date == None:
+                                last_date = fault
+                            else:
+                                if fault.end_date > last_date.end_date:
+                                    last_date = fault
+
+                        if cd['end_date'] < last_date.end_date:
+                            messages.error(request, 'Data zamknięcia reklamacji nie może być wcześniejsza od daty '
+                                                    'zamknięcia ostatniej rekalamacji: {} - {}'.format(last_date.name,
+                                                                                                       last_date.end_date.strftime(
+            '%d/%m/%Y')))
+                            return render(request,
+                                          template_name='book/complaint/edit.html',
+                                          context={'title': 'Usterka',
+                                                   'complaint': complaint,
+                                                   'form': form})
                 complaint.end_date = cd['end_date']
 
             if complaint.status != cd['status']:
