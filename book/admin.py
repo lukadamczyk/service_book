@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys, Fault_without_complaint
+from .models import Vehicle, Inspection, Complaint, Fault, Part, Owner, Trolleys, Fault_without_complaint, File
 
 
 class VehicleAdmin(admin.ModelAdmin):
@@ -57,3 +57,8 @@ class TrolleysAdmin(admin.ModelAdmin):
                     'seventh', 'eighth', 'ninth')
 
 admin.site.register(Trolleys, TrolleysAdmin)
+
+class FileAdmin(admin.ModelAdmin):
+    list_display = ('complaint', 'file_document')
+
+admin.site.register(File, FileAdmin)
